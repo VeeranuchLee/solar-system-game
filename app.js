@@ -125,14 +125,31 @@ const SUN_AT = { x: 0.028, y: 0.50, d: 0.27 }; /* fractions of stage width/heigh
    a stub. An earlier version drew a short arc around each planet at its own
    ellipse angle: on the steep part of an ellipse those arcs come out near
    vertical, so eight of them read as eight tally marks, not as orbits. */
-const ORBIT_SQUASH = 0.28;   /* an orbit's height against its width */
+const ORBIT_SQUASH = 0.28;   /* an orbit's height against its width, at most */
+/* The flattest the orrery is allowed to get. Below this the eight rings stop
+   reading as a zigzag -- and the zigzag is doing collision work, not just
+   looking pretty: Saturn's sprite is 2.3x its ball and clears its neighbours
+   horizontally by single pixels, so the vertical separation is what keeps them
+   apart. A window short enough to need less than this gets a clipped planet
+   instead, which is the lesser wrong. */
+const SQUASH_FLOOR = 0.10;
+/* A planet's name hangs under its ball and `#stage` is overflow:hidden, so the
+   label is part of the body as far as fitting is concerned: 4px of gap, one line
+   at the largest the label ever gets, and a little clear air under it. Fitting to
+   the label's exact height instead left it 4px off the stage edge -- inside, but
+   reading as if it had been cut. */
+const NAME_ROOM = 28;
 const DECK_MOON_SCALE = 3.2; /* levels 2 and 3 show one moon, so it is drawn big */
 /* Help arrives on the fourth attempt at the same question, not the second. The
    owner's number (2026-08-20): three tries is long enough to be thinking about
    it and short enough not to be stuck. */
 const MISSES_BEFORE_HINT = 3;
 const SNAP = 52;             /* extra pixels of slack around a drop target */
-const READ_FACT = 2000;      /* ms a fact holds the caption before the next question */
+/* The least time a fact gets before the next question, for when there is no
+   spoken line to wait for. With one, nextBeat() waits for the line to finish
+   instead -- the facts are three to five seconds read aloud, so this was never
+   long enough on its own. */
+const READ_FACT = 2000;
 
 /* -------------------------------------------------------------- elements --- */
 
@@ -175,7 +192,8 @@ const state = {
   misses: 0,        /* wrong answers to the question being asked now */
   sound: true,
   raf: 0,
-  askTimer: 0,
+  beat: null,       /* what the game does next, once the voice has finished */
+  beatTimer: 0,
   celebrating: false,
 };
 
@@ -282,6 +300,54 @@ function speak(text) {
   } catch (e) { voice.dead = true; }
 }
 
+/* ------------------------------------------------------------- the beat --- */
+
+/* One thing at a time is scheduled -- ask again, put the next moon on the deck,
+   finish the level -- and it waits for the voice before it happens.
+
+   What was here before hung a fixed 2000ms timer off the fact and let the next
+   question land on top of it. speak() begins by pausing the audio element, so the
+   question did not overlap the fact, it silenced it: "Titania, a moon of Uranus.
+   The biggest moon of Uranus." is over four seconds long and had two to say it.
+   The owner heard it on the moons (2026-08-21). Level 1's planet facts, the
+   poke-a-body fact, and the last fact of every level -- cut off by "Every planet
+   is home!" -- all had the same defect.
+
+   Polling rather than the element's `ended` event, deliberately: a clip that
+   404s, a device that refused to start playback, and a backgrounded tab all
+   leave `ended` unfired, and the game must never sit waiting for audio that is
+   not coming. Waiting on whatever is speaking now rather than on one particular
+   utterance is what lets a child tap the caption for a repeat without stranding
+   the level -- the repeat extends the wait instead of cancelling what follows.
+
+   `floor` is what the words need on the caption when there is no clip to wait
+   for -- sound off, or nothing rendered yet -- and in that case this behaves
+   exactly as the old timer did. */
+const QUIET = 700;        /* silence between a line ending and the next thing */
+const SPEAK_CAP = 15000;  /* a stalled clip must not hold the game up forever */
+
+function cancelBeat() {
+  clearTimeout(state.beatTimer);
+  state.beat = null;
+}
+
+function nextBeat(floor, fn) {
+  cancelBeat();
+  state.beat = fn;
+  const from = performance.now();
+  const tick = () => {
+    const el = voice.el;
+    const waited = performance.now() - from;
+    if (el && el.src && !el.paused && !el.ended && waited < SPEAK_CAP) {
+      state.beatTimer = setTimeout(tick, 150);
+      return;
+    }
+    state.beatTimer = setTimeout(() => { state.beat = null; fn(); },
+                                Math.max(QUIET, floor - waited));
+  };
+  tick();
+}
+
 /* --------------------------------------------------------------- helpers --- */
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
@@ -343,9 +409,41 @@ function say(text, cheer) {
    leaning: with an outer radius near a thousand pixels, even a few degrees of
    lean swings the far planets hundreds of pixels off the ecliptic and the neat
    zigzag turns into a lopsided slide. */
-function offEcliptic(dx, a) {
+function offEcliptic(dx, a, squash) {
   const inside = a * a - dx * dx;
-  return inside <= 0 ? 0 : ORBIT_SQUASH * Math.sqrt(inside);
+  return inside <= 0 ? 0 : squash * Math.sqrt(inside);
+}
+
+/* How flat the orbits have to be for every planet -- ball, ring, and printed
+   name -- to sit inside the stage.
+
+   Squash is the knob to turn, not the orbit radius. A ring's y is solved against
+   its own orbit and the ellipse drawn under it uses the same number, so squashing
+   both together keeps the invariant that the line under a planet is the orbit it
+   is standing on. Shrinking the radii instead would take the inner orbits below
+   their own planet's x, and those rings would drop flat onto the ecliptic.
+
+   This is the fitting that `clamp(..., 1, 1.6)` on `slack` could not do: slack
+   widens the zigzag on a tall stage but bottoms out at 1, so a stage half as tall
+   as the one this was drawn for swung its rings exactly as far. Neptune is
+   outermost and below the ecliptic, so it went off the bottom first and its name
+   went with it -- measured at 1366x600, 58px below the stage and cut off
+   completely by overflow:hidden. The owner found it before any test did. */
+function fitSquash(w, h, sun, scale, slack) {
+  let fit = ORBIT_SQUASH;
+  ORBIT_SPOTS.forEach((spot, i) => {
+    const spec = PLANETS[i];
+    const a = w * spot.a * slack;
+    const dx = w * spot.x - sun.x;
+    const reach = Math.sqrt(Math.max(a * a - dx * dx, 0));
+    if (reach < 1) return;              /* this ring already sits on the ecliptic */
+    const half = boxOf(spec, spec.d * scale).h / 2;
+    /* Above the ecliptic it is the ball that runs out of room; below it, the
+       name hanging underneath. */
+    const room = spot.up ? sun.y - half : h - sun.y - half - NAME_ROOM;
+    fit = Math.min(fit, room / reach);
+  });
+  return clamp(fit, SQUASH_FLOOR, ORBIT_SQUASH);
 }
 
 function measure() {
@@ -359,18 +457,21 @@ function measure() {
   /* A taller stage wants a taller zigzag, and the only way to get one is wider
      orbits: how far a ring can sit off the ecliptic is set by how much room its
      orbit has left over at that x. Landscape, the shape this was drawn for,
-     comes out at 1. */
+     comes out at 1. A stage SHORTER than that is fitSquash()'s job, not this
+     one's -- slack widens the zigzag and must not be the thing that narrows it,
+     because narrowing a radius moves a ring off its own orbit. */
   const slack = clamp(1 + 0.9 * (h / w - 0.55), 1, 1.6);
+  const squash = fitSquash(w, h, sun, scale, slack);
 
   const slots = ORBIT_SPOTS.map((spot, i) => {
     const x = w * spot.x;
     const a = w * spot.a * slack;
-    const off = offEcliptic(x - sun.x, a);
+    const off = offEcliptic(x - sun.x, a, squash);
     return { i, x, y: sun.y + (spot.up ? -off : off), a };
   });
 
   state.scale = scale;
-  state.layout = { w, h, sun, slots, ring: Math.round(clamp(64 * scale, 44, 78)) };
+  state.layout = { w, h, sun, slots, squash, ring: Math.round(clamp(64 * scale, 44, 78)) };
 
   sunEl.style.width = sun.d + "px";
   sunEl.style.height = sun.d + "px";
@@ -387,10 +488,10 @@ function measure() {
    it -- so a child can trace the line their planet travels on. The outer ones
    run off the edges, which is what an orrery looks like. */
 function drawOrbits() {
-  const { w, h, sun, slots } = state.layout;
+  const { w, h, sun, slots, squash } = state.layout;
   orbitSvg.setAttribute("viewBox", `0 0 ${w} ${h}`);
   orbitSvg.innerHTML = slots.map((s) => (
-    `<ellipse class="orbit" data-orbit="${s.i}" cx="${sun.x.toFixed(1)}" cy="${sun.y.toFixed(1)}" rx="${s.a.toFixed(1)}" ry="${(s.a * ORBIT_SQUASH).toFixed(1)}"/>`
+    `<ellipse class="orbit" data-orbit="${s.i}" cx="${sun.x.toFixed(1)}" cy="${sun.y.toFixed(1)}" rx="${s.a.toFixed(1)}" ry="${(s.a * squash).toFixed(1)}"/>`
   )).join("");
 }
 
@@ -576,7 +677,7 @@ function setMoonOrbit(moon) {
 /* --------------------------------------------------------------- the game --- */
 
 function startLevel(level) {
-  clearTimeout(state.askTimer);
+  cancelBeat();
   state.level = level;
   state.unlocked = Math.max(state.unlocked, level);
   save();
@@ -666,8 +767,10 @@ function presentNext() {
 
 /* The question. Level 1 walks the order and blinks the ring it wants; levels 2
    and 3 name the moon in hand and wait for a planet. */
+/* Asking does not cancel the pending beat. A child tapping to hear the question
+   again, in the gap while a fact is still being read, must not be able to stop
+   the next moon from ever arriving. */
 function ask() {
-  clearTimeout(state.askTimer);
   state.misses = 0;
   if (state.celebrating) return;
 
@@ -762,8 +865,9 @@ function landPlanet(piece, slotIndex) {
   speak(line);
 
   state.step = slotIndex + 1;
-  if (state.step >= PLANETS.length) setTimeout(finishLevel, 700);
-  else state.askTimer = setTimeout(ask, READ_FACT);
+  /* Whichever comes next waits for the fact to be finished being said. */
+  if (state.step >= PLANETS.length) nextBeat(700, finishLevel);
+  else nextBeat(READ_FACT, ask);
 }
 
 function landMoon(piece, hostKey) {
@@ -809,10 +913,10 @@ function landMoon(piece, hostKey) {
 
   state.current = null;
   if (!state.queue.length) {
-    setTimeout(finishLevel, 900);
+    nextBeat(900, finishLevel);
     return;
   }
-  state.askTimer = setTimeout(presentNext, READ_FACT);
+  nextBeat(READ_FACT, presentNext);
 }
 
 /* Names on the board. A planet keeps its label because it is the anchor a child
@@ -864,7 +968,7 @@ function refuse(piece, targetEl, message) {
 }
 
 function finishLevel() {
-  clearTimeout(state.askTimer);
+  cancelBeat();
   const info = LEVELS[state.level];
   state.celebrating = true;
   state.picked = null;
@@ -1084,6 +1188,11 @@ function onTapPlaced(event) {
   const piece = state.pieces.get(event.currentTarget.dataset.key);
   if (!piece || !piece.placed || state.celebrating) return;
 
+  /* Whatever the game was already going to do next still happens. A poke while a
+     fact is being read must not replace the next moon with a repeated question
+     and leave the level with nothing to come. */
+  const next = state.beat || ask;
+
   /* The question is live, so this tap is an answer and onStageTap has it. Doing
      nothing here is what stops a moon in orbit from stealing it. */
   if (state.level > 1 && state.picked) return;
@@ -1096,8 +1205,7 @@ function onTapPlaced(event) {
   tell(piece);
   /* Put the question back after the answer has been read, so a child poking at
      the board does not lose the thread of what was being asked. */
-  clearTimeout(state.askTimer);
-  state.askTimer = setTimeout(ask, READ_FACT + 1200);
+  nextBeat(READ_FACT + 1200, next);
 }
 
 function answerWith(moonPiece, hostKey) {
@@ -1315,7 +1423,13 @@ document.querySelectorAll(".lvl").forEach((btn) => {
 /* Repeat the question. Tapping the caption is the obvious thing a child does
    when they did not catch it. */
 captionEl.addEventListener("click", () => {
-  if (!state.celebrating) ask();
+  if (state.celebrating) return;
+  const next = state.beat;
+  ask();
+  /* Re-arm what was coming so it lands after the repeat instead of on top of it.
+     If a repeat was all that was pending, the tap has just done it. */
+  if (next && next !== ask) nextBeat(READ_FACT, next);
+  else cancelBeat();
 });
 
 /* Sizes the two fixed bands. The tray has to hold Jupiter, which is the tallest
@@ -1345,7 +1459,7 @@ function onResize() {
       /* Put the same moon back on a freshly measured deck: the queue must not
          advance just because the iPad was turned round. */
       state.queue.unshift(state.current);
-      clearTimeout(state.askTimer);
+      cancelBeat();
       presentNext();
     }
     if (state.level === 1) {
