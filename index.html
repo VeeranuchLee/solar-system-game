@@ -29,7 +29,7 @@
     </nav>
     <h1 id="title">Put the planets in order</h1>
     <div id="tools">
-      <button id="sound" class="tool" type="button" aria-pressed="true" aria-label="Sound on">
+      <button id="sound" class="tool" type="button" aria-pressed="true" aria-label="Sound on" aria-describedby="voiceNote">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h3l5-4v14l-5-4H4z"/><path class="wave" d="M16 8.5a5 5 0 0 1 0 7"/><path class="wave" d="M18.5 6a8.5 8.5 0 0 1 0 12"/><path class="mute" d="M16 9.5l5 5m0-5l-5 5"/></svg>
       </button>
       <button id="again" class="tool" type="button" aria-label="Start this level again">
@@ -54,6 +54,16 @@
   </main>
 
   <p id="caption" aria-live="polite"></p>
+
+  <!-- The AI-voice disclosure, hung off the sound button as its description. Every
+       app that ships a voice we rendered carries its own line (AUDIO-DIRECTION.md,
+       "One thing we should do regardless") -- this game is reachable by its own URL
+       and most players never see the hub footer. There is no menu or home screen to
+       print it on: the layout is header, stage, caption and tray, all sized to the
+       viewport. The sound button is the one control the line actually belongs to.
+       Unqualified here on purpose -- this game never falls back to speechSynthesis,
+       so every voice in it really is one we rendered. -->
+  <p id="voiceNote" class="sr-only">Every voice here is AI-generated. None is a recording of a real person.</p>
 
   <footer id="tray">
     <div id="trayRow"></div>

@@ -1054,6 +1054,33 @@ function onGrab(event) {
   el.addEventListener("pointermove", onMove);
   el.addEventListener("pointerup", onRelease);
   el.addEventListener("pointercancel", onRelease);
+  el.addEventListener("lostpointercapture", onLostCapture);
+}
+
+/* The safety net behind the fix in lift(). If the capture is ever lost for a reason
+   we did not cause -- and it is a real loss, not the momentary one lift() repairs --
+   the piece would otherwise sit abandoned in mid-air with no way to get it back. A
+   child cannot recover from that; the only exit is reloading the game. Put it back in
+   the tray instead and let them try again. */
+function onLostCapture(event) {
+  const drag = state.drag;
+  if (!drag || event.pointerId !== drag.id) return;
+  const el = drag.piece.el;
+  if (el.hasPointerCapture(drag.id)) return;   /* lift() already took it back */
+  releaseListeners(el);
+  state.drag = null;
+  clearHighlight();
+  if (drag.moved) {
+    drag.piece.homeAt = drag.home;
+    sendHome(drag.piece);
+  }
+}
+
+function releaseListeners(el) {
+  el.removeEventListener("pointermove", onMove);
+  el.removeEventListener("pointerup", onRelease);
+  el.removeEventListener("pointercancel", onRelease);
+  el.removeEventListener("lostpointercapture", onLostCapture);
 }
 
 function lift(drag) {
@@ -1065,6 +1092,17 @@ function lift(drag) {
   el.style.left = drag.home.x + "px";
   el.style.top = drag.home.y + "px";
   placedEl.appendChild(el);
+  /* appendChild moves the node, and moving a node implicitly releases pointer
+     capture -- so the capture taken in onGrab dies right here, on the first move of
+     every drag. What is left still looks like it works, because the listeners are on
+     the element and the element sits under the finger: slow drags keep hitting it.
+     A quick one does not. Events then go to whatever is under the cursor instead,
+     no pointerup ever reaches the piece, and it is abandoned mid-drag -- still
+     absolutely positioned, and invisible if it was left above the stage, which
+     `#stage{overflow:hidden}` clips. Reported from the live game as "drag the
+     planets upward and they vanish"; upward is simply where the header is and where
+     the cursor most easily outruns the piece. Retaking it is the whole fix. */
+  try { el.setPointerCapture(drag.id); } catch (e) { /* not fatal */ }
 }
 
 function onMove(event) {
@@ -1077,10 +1115,19 @@ function onMove(event) {
     sfx.pick();
   }
   const box = stage.getBoundingClientRect();
-  const x = event.clientX - box.left - drag.offX;
-  const y = event.clientY - box.top - drag.offY;
-  drag.piece.el.style.left = x + "px";
-  drag.piece.el.style.top = y + "px";
+  /* Kept inside the stage on purpose. `#stage{overflow:hidden}` clips anything past
+     its edge, so a planet dragged up into the header is simply not drawn -- the child
+     is holding something they cannot see, which is the other half of what was reported
+     as "they vanish". The piece now stops at the edge and stays under the finger's
+     direction of travel instead. Nothing is lost by clamping: a drop outside a target
+     sends the piece home anyway, so the clamped position answers exactly as the
+     unclamped one did. */
+  const el = drag.piece.el;
+  const half = { w: el.offsetWidth / 2, h: el.offsetHeight / 2 };
+  const x = clamp(event.clientX - box.left - drag.offX, half.w, box.width - half.w);
+  const y = clamp(event.clientY - box.top - drag.offY, half.h, box.height - half.h);
+  el.style.left = x + "px";
+  el.style.top = y + "px";
   highlight(x, y);
 }
 
@@ -1091,9 +1138,7 @@ function onRelease(event) {
      onStageTap and answer a second time. */
   event.stopPropagation();
   const el = drag.piece.el;
-  el.removeEventListener("pointermove", onMove);
-  el.removeEventListener("pointerup", onRelease);
-  el.removeEventListener("pointercancel", onRelease);
+  releaseListeners(el);
   state.drag = null;
   clearHighlight();
 

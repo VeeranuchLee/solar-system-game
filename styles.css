@@ -460,3 +460,12 @@ body{
   .spark{display:none}
   #card{animation:none}
 }
+
+/* Reachable by assistive tech, never painted. Used by #voiceNote, the sound
+   button's description. Not `display:none` and not `hidden`: both remove the
+   node from the accessibility tree, which would make aria-describedby point at
+   nothing. */
+.sr-only{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;
+}

@@ -11,7 +11,7 @@
    v2  the 59 narration clips, never published
    v3  2026-08-21  first public version. The runtime narration manifest became
        narration/clips.json, so v2's cached lines.json would 404 the voice. */
-const CACHE_NAME = "solar-order-v4";
+const CACHE_NAME = "solar-order-v5";
 
 /* Both lists are generated -- cache-list.js by tools/build-assets.py from the
    sprites it produced, audio-list.js by tools/build-audio.py from the clips it
