@@ -10,8 +10,15 @@
 /* v1  the first build, never published
    v2  the 59 narration clips, never published
    v3  2026-08-21  first public version. The runtime narration manifest became
-       narration/clips.json, so v2's cached lines.json would 404 the voice. */
-const CACHE_NAME = "solar-order-v5";
+       narration/clips.json, so v2's cached lines.json would 404 the voice.
+   v4  the voice disclosure on the sound button
+   v5  the drag fix -- retaking the pointer capture lift() throws away
+   v6  the back-to-the-hub button every app now carries
+   v7  2026-08-28  level 4, the dwarf planets: six new sprites, a rewritten
+       app.js, and level 3's closing line, which now points at level 4.
+   v8  2026-08-28  the voice for level 4 -- 18 new clips -- and the openers and
+       closing lines now spoken on every level, which changes audio-list.js. */
+const CACHE_NAME = "solar-order-v8";
 
 /* Both lists are generated -- cache-list.js by tools/build-assets.py from the
    sprites it produced, audio-list.js by tools/build-audio.py from the clips it

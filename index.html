@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Solar System Order</title>
-<meta name="description" content="Put the planets in order around the Sun, then give every planet its moons."/>
+<meta name="description" content="Put the planets in order around the Sun, give every planet its moons, then do the same for the dwarf planets."/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <link rel="stylesheet" href="./fonts.css"/>
 <link rel="stylesheet" href="./styles.css"/>
@@ -22,10 +22,21 @@
 <div id="app">
 
   <header id="bar">
+    <!-- Owner, 2026-08-27: *"need to make sure ALL games has back icon to the hub"* --
+         a 4-year-old could not get out of the game. It goes IN the bar rather than
+         fixed over the corner, because the level buttons already own the top left and
+         an overlay would land on top of them. Absolute URL on purpose: published,
+         /solar-system-game/ and /children-apps/ are siblings, but in the repo the hub
+         lives under site/, so a relative link would work live and 404 in every local
+         preview -- the kind of difference nobody notices until a child taps it. -->
+    <a id="hub" class="tool" href="https://veeranuchlee.github.io/children-apps/" aria-label="Back to Children Games">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+    </a>
     <nav id="levels" aria-label="Levels">
       <button class="lvl" data-level="1" type="button"><span>1</span></button>
       <button class="lvl" data-level="2" type="button"><span>2</span></button>
       <button class="lvl" data-level="3" type="button"><span>3</span></button>
+      <button class="lvl" data-level="4" type="button"><span>4</span></button>
     </nav>
     <h1 id="title">Put the planets in order</h1>
     <div id="tools">

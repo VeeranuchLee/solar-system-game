@@ -51,7 +51,9 @@ body{
   flex:0 0 auto;
   height:var(--bar-h);
   display:grid;
-  grid-template-columns:auto 1fr auto;
+  /* Four columns since 2026-08-27: the hub link, the levels, the title, the tools.
+     The title keeps the only 1fr so it stays centred-ish as the ends grow. */
+  grid-template-columns:auto auto 1fr auto;
   align-items:center;
   gap:12px;
   padding:0 clamp(10px,2vw,22px);
@@ -97,6 +99,11 @@ body{
   transition:transform .15s,background .15s;
 }
 .tool:active{transform:scale(.92)}
+
+/* The hub link wears the same chrome as the tools, but it is an <a>: it needs the
+   underline off and its glyph centred, which .tool's grid does for a <button> only
+   because a button centres its own content. */
+#hub{text-decoration:none;justify-items:center}
 .tool svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 #sound svg .mute{display:none}
 #sound[aria-pressed="false"] svg .wave{display:none}

@@ -1,8 +1,9 @@
-/* Solar System Order — three levels of putting things where they belong.
+/* Solar System Order — four levels of putting things where they belong.
 
    Level 1  the eight planets, in order out from the Sun
    Level 2  the moons a child is likely to have heard of, onto their planet
    Level 3  the moons almost nobody has heard of, onto their planet
+   Level 4  the five dwarf planets, in order, and then Pluto's giant moon
 
    The game asks and the child answers. Level 1 asks for one planet at a time in
    order -- the ring it is asking about blinks, the question names what it wants,
@@ -35,6 +36,34 @@ const PLANETS = [
   { key: "neptune", name: "Neptune", d: 64, fact: "The windiest planet, far out in the cold and the dark." },
 ];
 
+/* The five the IAU recognises, in NASA's own order out from the Sun: Ceres in
+   the asteroid belt and four beyond Neptune. Ordering them by average distance is
+   what makes the order stable -- these orbits are stretched, and Pluto is nearer
+   the Sun than Neptune for twenty years at a time -- and it is the order NASA
+   prints.
+
+   They are NOT eight-plus-five. Pluto does not join level 1, and no level ever
+   calls it a planet: the storybook's page 19 is careful that Pluto is still a
+   real world and that "dwarf planet" is a group it belongs to, not a demotion out
+   of existence, and a game that slid it into "put the planets in order" would
+   teach exactly the thing that page refuses to.
+
+   Level 4 has its own board for the same reason. Eris averages sixty-eight times
+   the Earth's distance from the Sun against Neptune's thirty, so putting the
+   thirteen on one set of rings would need a made-up scale that quietly said Eris
+   is just past Neptune. Its own board, and each one's own words for where it
+   lives, tells the truth instead.
+
+   `d` is again compressed but truly ordered: Pluto is widest, then Eris, then
+   Haumea's long axis, then Makemake, then Ceres. */
+const DWARFS = [
+  { key: "ceres",    name: "Ceres",    d: 30, fact: "The biggest world in the asteroid belt, between Mars and Jupiter." },
+  { key: "pluto",    name: "Pluto",    d: 62, fact: "Far beyond Neptune. A spacecraft flew past and saw a big heart made of ice." },
+  { key: "haumea",   name: "Haumea",   d: 54, fact: "Beyond Neptune, spinning so fast that it is stretched long, like an egg." },
+  { key: "makemake", name: "Makemake", d: 40, fact: "Beyond Neptune, reddish-brown, with one small moon." },
+  { key: "eris",     name: "Eris",     d: 60, fact: "The furthest of them all, and so icy that it shines." },
+];
+
 /* Saturn's sprite is the ball plus the whole ring ellipse, so it is much wider
    than the ball. Both numbers are printed by tools/build-assets.py; change the
    sprite and they change with it. */
@@ -63,35 +92,16 @@ const MOONS = [
   { key: "umbriel",   name: "Umbriel",   of: "uranus",  level: 3, d: 19, fact: "The darkest of all the moons of Uranus." },
   { key: "titania",   name: "Titania",   of: "uranus",  level: 3, d: 21, fact: "The biggest moon of Uranus." },
   { key: "oberon",    name: "Oberon",    of: "uranus",  level: 3, d: 20, fact: "Old, dark, and covered all over in craters." },
+
+  /* The biggest moon in the game, and that is the fact about it: Charon is over
+     half Pluto's width, where our own Moon is barely a quarter of Earth's. */
+  { key: "charon",    name: "Charon",    of: "pluto",   level: 4, d: 30, fact: "Half as wide as Pluto. The two of them dance around each other." },
 ];
 
 const NO_MOONS = {
   mercury: "Mercury has no moons at all.",
   venus: "Venus has no moons at all.",
-};
-
-const LEVELS = {
-  1: {
-    title: "Put the planets in order",
-    open: "Listen to the question, then tap the right planet.",
-    doneTitle: "Every planet is home!",
-    doneText: "Eight planets, all in the right order. Now they need their moons.",
-    next: "Start level 2",
-  },
-  2: {
-    title: "The moons everybody knows",
-    open: "Tap the planet this moon goes around.",
-    doneTitle: "The famous moons are home!",
-    doneText: "Now for the moons that hardly anybody has heard of.",
-    next: "Start level 3",
-  },
-  3: {
-    title: "The moons hardly anybody knows",
-    open: "Tap the planet this moon goes around.",
-    doneTitle: "You know them all!",
-    doneText: "Every planet in order, and every moon at home. That is the whole family.",
-    next: "Play it all again",
-  },
+  ceres: "Ceres has no moons at all.",
 };
 
 /* Each planet gets a ring position `x` and an orbit radius `a`, both fractions
@@ -119,6 +129,96 @@ const ORBIT_SPOTS = [
   { x: 0.880, a: 0.955, up: true  },
   { x: 0.940, a: 1.040, up: false },
 ];
+
+/* Level 4's five rings. Same construction as ORBIT_SPOTS -- `a` is always a
+   little larger than `x`, so every ring lands on a real orbit rather than at the
+   far end of one -- and the same alternating `up`, which is what keeps five
+   bodies from crowding onto one line. */
+const DWARF_SPOTS = [
+  { x: 0.230, a: 0.235, up: true  },
+  { x: 0.395, a: 0.425, up: false },
+  { x: 0.560, a: 0.615, up: true  },
+  { x: 0.745, a: 0.820, up: false },
+  { x: 0.920, a: 1.010, up: true  },
+];
+
+/* What each level is made of, so the code can ask what a level IS rather than
+   what number it is.
+
+   `order` is a roster to be put in place from the Sun outwards, one body at a
+   time. `hosts` is a board that is simply set out, and the level hands over
+   moons instead. A level may do both: level 4 orders the five dwarf planets and
+   then gives Pluto its moon, which is why the mode lives in `state.mode` and not
+   in the level number.
+
+   `spots` is the level's own set of orbits, and `card` is what the finishing
+   card shows.
+
+   The three `ask*` templates are here rather than inside questionFor() because
+   tools/build-narration.py reads them straight out of this file to build the
+   render list. It used to carry its own hand-copied English for level 1's eight
+   questions, with a comment asking whoever changed one to remember the other. */
+const LEVELS = {
+  1: {
+    order: PLANETS,
+    spots: ORBIT_SPOTS,
+    askFirst: "Which planet is closest to the Sun?",
+    askNext: "Which planet comes next, after %s?",
+    askLast: "Which planet is the furthest from the Sun?",
+    card: ["earth", "jupiter", "saturn"],
+    cardFrom: "planets",
+    title: "Put the planets in order",
+    open: "Listen to the question, then tap the right planet.",
+    doneTitle: "Every planet is home!",
+    doneText: "Eight planets, all in the right order. Now they need their moons.",
+    next: "Start level 2",
+  },
+  2: {
+    hosts: PLANETS,
+    spots: ORBIT_SPOTS,
+    askHost: "Which planet does %s go around?",
+    card: ["ganymede", "titan", "moon"],
+    cardFrom: "moons",
+    title: "The moons everybody knows",
+    open: "Tap the planet this moon goes around.",
+    doneTitle: "The famous moons are home!",
+    doneText: "Now for the moons that hardly anybody has heard of.",
+    next: "Start level 3",
+  },
+  3: {
+    hosts: PLANETS,
+    spots: ORBIT_SPOTS,
+    askHost: "Which planet does %s go around?",
+    card: ["titania", "enceladus", "miranda"],
+    cardFrom: "moons",
+    title: "The moons hardly anybody knows",
+    open: "Tap the planet this moon goes around.",
+    doneTitle: "You know them all!",
+    doneText: "Every planet in order, and every moon at home. Now for the dwarf planets.",
+    next: "Start level 4",
+  },
+  4: {
+    order: DWARFS,
+    spots: DWARF_SPOTS,
+    askFirst: "Which dwarf planet is closest to the Sun?",
+    askNext: "Which dwarf planet comes next, after %s?",
+    askLast: "Which dwarf planet is the furthest from the Sun?",
+    askHost: "Which dwarf planet does %s go around?",
+    /* Shown once the five are in order, because "put the dwarf planets in order"
+       is no longer what the level is doing. Not a spoken line -- a title never
+       is -- so it costs nothing to be accurate here. */
+    moonTitle: "Pluto's big moon",
+    card: ["pluto", "haumea", "eris"],
+    cardFrom: "planets",
+    title: "Put the dwarf planets in order",
+    open: "Tap the dwarf planet this moon goes around.",
+    doneTitle: "You know the dwarf planets!",
+    doneText: "Ceres in the asteroid belt, four more far beyond Neptune, and Charon home with Pluto.",
+    next: "Play it all again",
+  },
+};
+
+const TOP_LEVEL = 4;
 
 const SUN_AT = { x: 0.028, y: 0.50, d: 0.27 }; /* fractions of stage width/height */
 /* Flat enough that a whole orbit fits on the stage instead of being cropped to
@@ -179,7 +279,11 @@ const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 const state = {
   level: 1,
   unlocked: 1,
-  step: 0,          /* level 1: which planet is being asked for */
+  /* "order" is putting a roster in place from the Sun outwards; "home" is a moon
+     in hand looking for the body it goes around. Level 4 is the first and then
+     the second, so this cannot be read off the level number. */
+  mode: "order",
+  step: 0,          /* an order level: which body is being asked for */
   scale: 1,
   layout: null,
   home: new Map(),  /* planet key -> { slot } once it has landed */
@@ -351,9 +455,15 @@ function nextBeat(floor, fn) {
 /* --------------------------------------------------------------- helpers --- */
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-const planetOf = (key) => PLANETS.find((p) => p.key === key);
+/* The large bodies on this level's board, and the orbits they stand on. Levels
+   1 to 3 are the eight planets; level 4 is the five dwarf planets and never shows
+   a planet at all. */
+const bodies = () => LEVELS[state.level].order || LEVELS[state.level].hosts;
+const spots = () => LEVELS[state.level].spots;
+const bodyOf = (key) => bodies().find((b) => b.key === key);
 const moonsFor = (level) => MOONS.filter((m) => m.level === level);
 const askName = (spec) => spec.as || spec.name;
+const ordering = () => state.mode === "order";
 
 function shuffle(list) {
   const out = list.slice();
@@ -431,8 +541,8 @@ function offEcliptic(dx, a, squash) {
    completely by overflow:hidden. The owner found it before any test did. */
 function fitSquash(w, h, sun, scale, slack) {
   let fit = ORBIT_SQUASH;
-  ORBIT_SPOTS.forEach((spot, i) => {
-    const spec = PLANETS[i];
+  spots().forEach((spot, i) => {
+    const spec = bodies()[i];
     const a = w * spot.a * slack;
     const dx = w * spot.x - sun.x;
     const reach = Math.sqrt(Math.max(a * a - dx * dx, 0));
@@ -463,7 +573,7 @@ function measure() {
   const slack = clamp(1 + 0.9 * (h / w - 0.55), 1, 1.6);
   const squash = fitSquash(w, h, sun, scale, slack);
 
-  const slots = ORBIT_SPOTS.map((spot, i) => {
+  const slots = spots().map((spot, i) => {
     const x = w * spot.x;
     const a = w * spot.a * slack;
     const off = offEcliptic(x - sun.x, a, squash);
@@ -667,7 +777,7 @@ function setMoonOrbit(moon) {
   const at = state.home.get(moon.of);
   if (!at) return;
   const slot = state.layout.slots[at.slot];
-  const hostR = (planetOf(moon.of).d * state.scale) / 2;
+  const hostR = (bodyOf(moon.of).d * state.scale) / 2;
   moon.cx = slot.x;
   moon.cy = slot.y;
   moon.rx = hostR + (11 + moon.ring * 8.5) * state.scale;
@@ -678,11 +788,17 @@ function setMoonOrbit(moon) {
 
 function startLevel(level) {
   cancelBeat();
+  /* Every other way into a level -- the nav buttons, the replay button -- can be
+     taken while the finishing card is up, and only the card's own button used to
+     put the curtain away. The level started correctly underneath and the child
+     was left looking at a card for the level they had just left. */
+  curtain.hidden = true;
   state.level = level;
   state.unlocked = Math.max(state.unlocked, level);
   save();
 
-  titleEl.textContent = LEVELS[level].title;
+  const spec = LEVELS[level];
+  titleEl.textContent = spec.title;
   syncLevelButtons();
 
   state.picked = null;
@@ -690,8 +806,17 @@ function startLevel(level) {
   state.misses = 0;
   state.step = 0;
   state.celebrating = false;
+  state.mode = spec.order ? "order" : "home";
+  /* An order level has nothing on the deck, and leaving the last level's moon in
+     here is a live wire: onResize() puts `current` back on the deck, so a turn of
+     the iPad during level 4's ordering would have pushed Oberon into the
+     dwarf-planet queue. */
+  state.current = null;
 
-  if (level === 1) {
+  if (spec.order) {
+    /* An order level always starts from an empty board. Level 4's board is a
+       different five bodies on a different five orbits, so nothing from the
+       level before it can be kept. */
     state.home.clear();
     state.orbiting.length = 0;
     placedEl.innerHTML = "";
@@ -700,11 +825,11 @@ function startLevel(level) {
     /* measure() before buildTray(), because the tray sizes its pieces from the
        scale measure() works out. */
     measure();
-    buildTray(shuffle(PLANETS));
+    buildTray(shuffle(spec.order));
   } else {
     /* Levels 2 and 3 inherit the planets. If a child jumps straight to level 3
        we still need them on the board, so seat them in order first. */
-    if (state.home.size !== PLANETS.length) seatAllPlanets();
+    if (state.home.size !== bodies().length) seatAll();
     if (level === 2) {
       state.orbiting.length = 0;
       placedEl.querySelectorAll(".body.moon").forEach((el) => el.remove());
@@ -719,11 +844,25 @@ function startLevel(level) {
        a row of eight little grey moons is a search puzzle before it is an
        astronomy question, and the search is not the thing being taught. */
     state.queue = shuffleApart(moonsFor(level));
-    presentNext();
+    openPhase(presentNext);
     return;
   }
 
-  ask();
+  openPhase(ask);
+}
+
+/* Level 4, once its five are in order: the rings have nothing left to hold, so
+   they go, and from here the level behaves exactly like levels 2 and 3 -- one
+   moon on the deck, and the board is the five dwarf planets rather than the eight
+   planets. */
+function startMoonPhase() {
+  state.mode = "home";
+  state.misses = 0;
+  const moonTitle = LEVELS[state.level].moonTitle;
+  if (moonTitle) titleEl.textContent = moonTitle;
+  slotsEl.innerHTML = "";
+  state.queue = shuffleApart(moonsFor(state.level));
+  openPhase(presentNext);
 }
 
 /* Put the next moon on the deck and ask about it. The deck is the tray band with
@@ -770,11 +909,32 @@ function presentNext() {
 /* Asking does not cancel the pending beat. A child tapping to hear the question
    again, in the gap while a fact is still being read, must not be able to stop
    the next moon from ever arriving. */
+/* Every phase opens by saying out loud what to do. These lines existed and were
+   shown as captions only -- which is no instruction at all for a child who cannot
+   read yet: the words sat on the screen and the game never said them. Owner's
+   call, 2026-08-28.
+
+   An ordering phase is opened by its title. "Put the planets in order" already IS
+   the instruction, and it is the heading above the board, so the child hears the
+   words they are looking at. A moon phase is opened by `open`, the line written
+   for it. Level 4 does both in turn and gets both, in turn.
+
+   Spoken once, at the top of the phase, and the first question waits for it --
+   speak() would otherwise silence the instruction with the question, which is the
+   defect the beat machinery exists to prevent. */
+function openPhase(then) {
+  const spec = LEVELS[state.level];
+  const line = ordering() ? spec.title : spec.open;
+  say(line);
+  speak(line);
+  nextBeat(READ_FACT, then);
+}
+
 function ask() {
   state.misses = 0;
   if (state.celebrating) return;
 
-  if (state.level === 1) {
+  if (ordering()) {
     slotsEl.querySelectorAll(".slot").forEach((el) => {
       el.classList.toggle("asking", Number(el.dataset.slot) === state.step);
     });
@@ -791,38 +951,49 @@ function ask() {
   }
   /* The name is inside the question, which is how the child learns what the moon
      on the deck is called without a separate clip to chain in front. */
-  const line = `Which planet does ${askName(state.picked.spec)} go around?`;
+  const line = LEVELS[state.level].askHost.replace("%s", askName(state.picked.spec));
   say(line);
   sfx.ask();
   speak(line);
 }
 
 function questionFor(step) {
-  if (step === 0) return "Which planet is closest to the Sun?";
-  if (step === PLANETS.length - 1) return "Which planet is the furthest from the Sun?";
-  return `Which planet comes next, after ${PLANETS[step - 1].name}?`;
+  const spec = LEVELS[state.level];
+  const roster = bodies();
+  if (step === 0) return spec.askFirst;
+  if (step === roster.length - 1) return spec.askLast;
+  return spec.askNext.replace("%s", roster[step - 1].name);
 }
 
 function buildSlots() {
   slotsEl.innerHTML = "";
-  if (state.level !== 1) return;
-  PLANETS.forEach((_, i) => {
+  if (!ordering()) return;
+  bodies().forEach((_, i) => {
     const el = document.createElement("div");
     el.className = "slot";
     el.dataset.slot = String(i);
     el.innerHTML = `<b>${i + 1}</b>`;
     slotsEl.appendChild(el);
   });
-  layoutSlots();
+  /* Deliberately NOT laid out here. Both callers measure() straight after, and
+     measure() ends in placeEverything() -> layoutSlots() with the layout that
+     belongs to the level being started. Laying out here instead used the layout
+     of the level being LEFT, which was harmless only while every level had eight
+     slots. Level 4 has five: leaving level 4 built eight fresh slot divs and
+     indexed them into a five-slot layout, so slot 6 read `undefined.x` and threw
+     -- inside startLevel, before the tray, the caption or the question had been
+     rebuilt. The child was left with level 1's heading over level 4's board and
+     a game that no longer responded. "Play it all again" on level 4's own
+     finishing card is that path. */
 }
 
 /* Used when a level is entered out of order. No animation, no sound: this is
    scene-setting, not an achievement. */
-function seatAllPlanets() {
+function seatAll() {
   state.home.clear();
   placedEl.innerHTML = "";
   state.pieces.clear();
-  PLANETS.forEach((spec, i) => {
+  bodies().forEach((spec, i) => {
     const el = makePiece(spec, "planet");
     el.classList.add("locked");
     placedEl.appendChild(el);
@@ -831,7 +1002,7 @@ function seatAllPlanets() {
   });
 }
 
-function landPlanet(piece, slotIndex) {
+function landBody(piece, slotIndex) {
   const slot = state.layout.slots[slotIndex];
   const el = piece.el;
   const box = boxOf(piece.spec, piece.spec.d * state.scale);
@@ -866,12 +1037,15 @@ function landPlanet(piece, slotIndex) {
 
   state.step = slotIndex + 1;
   /* Whichever comes next waits for the fact to be finished being said. */
-  if (state.step >= PLANETS.length) nextBeat(700, finishLevel);
-  else nextBeat(READ_FACT, ask);
+  if (state.step < bodies().length) nextBeat(READ_FACT, ask);
+  /* The roster is in place. Level 4 still owes Pluto its moon; levels that owe
+     nothing finish here. */
+  else if (moonsFor(state.level).length) nextBeat(READ_FACT, startMoonPhase);
+  else nextBeat(700, finishLevel);
 }
 
 function landMoon(piece, hostKey) {
-  const host = planetOf(hostKey);
+  const host = bodyOf(hostKey);
   const el = piece.el;
   const ring = state.orbiting.filter((m) => m.of === hostKey).length;
 
@@ -949,20 +1123,20 @@ function refuse(piece, targetEl, message) {
 
   /* Enough tries on one question: point at the answer. Repeating "try again" is
      not help, it is the same wall again. */
-  if (state.level === 1) {
-    const want = state.pieces.get(PLANETS[state.step].key);
+  if (ordering()) {
+    const want = state.pieces.get(bodies()[state.step].key);
     if (want && !want.placed) {
       want.el.classList.add("blink");
       setTimeout(() => want.el.classList.remove("blink"), 4200);
     }
-    say(`It is ${PLANETS[state.step].name}. Look for the glowing one.`);
+    say(`It is ${bodies()[state.step].name}. Look for the glowing one.`);
   } else if (state.picked) {
     const hostPiece = state.pieces.get(state.picked.spec.of);
     if (hostPiece) {
       hostPiece.el.classList.add("blink");
       setTimeout(() => hostPiece.el.classList.remove("blink"), 4200);
     }
-    say(`${state.picked.spec.name} belongs to ${planetOf(state.picked.spec.of).name}.`);
+    say(`${state.picked.spec.name} belongs to ${bodyOf(state.picked.spec.of).name}.`);
   }
   state.misses = 0;
 }
@@ -988,22 +1162,21 @@ function finishLevel() {
   });
 
   state.layout.slots.forEach((s, i) => setTimeout(() => burst(s.x, s.y, 12), 120 + i * 90));
-  setTimeout(() => showCard(info), 1500);
+  /* The card carries the closing line and now says it, so it must not arrive on
+     top of the cheer it follows. A flat 1500ms timer let showCard's speak() cut
+     "You know the dwarf planets!" off mid-word. */
+  nextBeat(1500, () => showCard(info));
 }
 
 function showCard(info) {
-  const next = state.level < 3 ? state.level + 1 : 1;
+  const next = state.level < TOP_LEVEL ? state.level + 1 : 1;
   cardTitle.textContent = info.doneTitle;
   cardText.textContent = info.doneText;
   cardGo.textContent = info.next;
 
   cardArt.innerHTML = "";
-  const show = state.level === 1
-    ? ["earth", "jupiter", "saturn"]
-    : state.level === 2
-      ? ["ganymede", "titan", "moon"]
-      : ["titania", "enceladus", "miranda"];
-  const dir = state.level === 1 ? "planets" : "moons";
+  const show = info.card;
+  const dir = info.cardFrom;
   for (const key of show) {
     const img = document.createElement("img");
     img.src = `./assets/${dir}/${key}.webp`;
@@ -1013,6 +1186,9 @@ function showCard(info) {
 
   curtain.hidden = false;
   cardGo.focus();
+  /* What the card actually teaches -- which moons went where, what comes next --
+     is in doneText, and a child who cannot read the card was never told it. */
+  speak(info.doneText);
   cardGo.onclick = () => {
     curtain.hidden = true;
     startLevel(next);
@@ -1161,8 +1337,8 @@ function onRelease(event) {
 function onTapPiece(piece) {
   if (state.celebrating || piece.placed) return;
 
-  if (state.level === 1) {
-    if (piece.spec.key === PLANETS[state.step].key) landPlanet(piece, state.step);
+  if (ordering()) {
+    if (piece.spec.key === bodies()[state.step].key) landBody(piece, state.step);
     else refuse(piece, piece.el, `Not that one. ${questionFor(state.step)}`);
     return;
   }
@@ -1187,7 +1363,7 @@ const CATCH_MARGIN = 14;
 const CATCH_FLOOR = 44;
 
 function catchmentOf(key) {
-  const spec = planetOf(key);
+  const spec = bodyOf(key);
   const r = (spec.d * state.scale) / 2;
   const rings = state.orbiting.filter((m) => m.of === key).map((m) => m.ring);
   const outer = rings.length
@@ -1200,7 +1376,7 @@ function catchmentOf(key) {
    two planets can never both claim a tap -- the boundary between them is the
    midpoint -- and the reach means a tap out in empty space still answers
    nothing, rather than becoming a wrong answer the child did not give. */
-function planetNear(x, y) {
+function bodyNear(x, y) {
   let best = null;
   let bestDist = Infinity;
   for (const [key, at] of state.home) {
@@ -1218,9 +1394,9 @@ function planetNear(x, y) {
    proximity, so this runs only for taps that are not answering anything: level 1,
    and the finished board. */
 function onStageTap(event) {
-  if (state.level === 1 || !state.picked || state.celebrating) return;
+  if (ordering() || !state.picked || state.celebrating) return;
   const box = stage.getBoundingClientRect();
-  const key = planetNear(event.clientX - box.left, event.clientY - box.top);
+  const key = bodyNear(event.clientX - box.left, event.clientY - box.top);
   if (key) answerWith(state.picked, key);
 }
 
@@ -1240,10 +1416,10 @@ function onTapPlaced(event) {
 
   /* The question is live, so this tap is an answer and onStageTap has it. Doing
      nothing here is what stops a moon in orbit from stealing it. */
-  if (state.level > 1 && state.picked) return;
+  if (!ordering() && state.picked) return;
 
   const line = piece.kind === "moon"
-    ? `${piece.spec.name}, a moon of ${planetOf(piece.spec.of).name}. ${piece.spec.fact}`
+    ? `${piece.spec.name}, a moon of ${bodyOf(piece.spec.of).name}. ${piece.spec.fact}`
     : `${piece.spec.name}. ${piece.spec.fact}`;
   say(line);
   speak(line);
@@ -1262,22 +1438,22 @@ function answerWith(moonPiece, hostKey) {
   refuse(
     null,
     hostPiece ? hostPiece.el : null,
-    NO_MOONS[hostKey] || `${planetOf(hostKey).name} is not where ${moonPiece.spec.name} lives.`
+    NO_MOONS[hostKey] || `${bodyOf(hostKey).name} is not where ${moonPiece.spec.name} lives.`
   );
 }
 
 /* Where a dragged piece was let go. One decision point for the drag, so it can
    never disagree with the tap about what counts as a hit. */
 function dropAt(piece, at) {
-  if (state.level === 1) {
+  if (ordering()) {
     /* Only the ring being asked about accepts anything, and only from the
        planet it is asking for. Anything else slides back to the tray. */
     const slot = state.layout.slots[state.step];
     const reach = state.layout.ring / 2 + SNAP;
     const onTarget = Math.hypot(at.x - slot.x, at.y - slot.y) < reach;
 
-    if (piece.spec.key === PLANETS[state.step].key) {
-      if (onTarget) landPlanet(piece, state.step);
+    if (piece.spec.key === bodies()[state.step].key) {
+      if (onTarget) landBody(piece, state.step);
       else { sendHome(piece); say(questionFor(state.step)); }
       return;
     }
@@ -1289,7 +1465,7 @@ function dropAt(piece, at) {
     return;
   }
 
-  const hostKey = nearestPlanet(at);
+  const hostKey = nearestBody(at);
   if (!hostKey) {
     sendHome(piece);
     return;
@@ -1298,12 +1474,12 @@ function dropAt(piece, at) {
   if (!piece.placed) sendHome(piece);
 }
 
-function nearestPlanet(at) {
+function nearestBody(at) {
   let best = null;
   let bestDist = Infinity;
   for (const [key, home] of state.home) {
     const slot = state.layout.slots[home.slot];
-    const reach = (planetOf(key).d * state.scale) / 2 + SNAP;
+    const reach = (bodyOf(key).d * state.scale) / 2 + SNAP;
     const d = Math.hypot(at.x - slot.x, at.y - slot.y);
     if (d < reach && d < bestDist) {
       bestDist = d;
@@ -1315,14 +1491,14 @@ function nearestPlanet(at) {
 
 function highlight(x, y) {
   clearHighlight();
-  if (state.level === 1) {
+  if (ordering()) {
     const slot = state.layout.slots[state.step];
     if (Math.hypot(x - slot.x, y - slot.y) < state.layout.ring / 2 + SNAP) {
       slotsEl.querySelector(`.slot[data-slot="${state.step}"]`).classList.add("near");
     }
     return;
   }
-  const key = nearestPlanet({ x, y });
+  const key = nearestBody({ x, y });
   if (key) {
     const piece = state.pieces.get(key);
     if (piece) piece.el.classList.add("hot");
@@ -1443,7 +1619,7 @@ function save() {
 function load() {
   try {
     const raw = JSON.parse(localStorage.getItem("solar-order") || "{}");
-    state.unlocked = clamp(Number(raw.unlocked) || 1, 1, 3);
+    state.unlocked = clamp(Number(raw.unlocked) || 1, 1, TOP_LEVEL);
     state.sound = raw.sound !== false;
   } catch (e) { /* same */ }
 }
@@ -1493,9 +1669,9 @@ function onResize() {
     measure();
     /* The tray's cell widths depend on the stage width, so it is rebuilt with
        whatever has not been placed yet, in the order it is showing now. */
-    if (state.level === 1) {
+    if (ordering()) {
       const order = [...trayRow.children].map((c) => c.dataset.key);
-      const specs = PLANETS
+      const specs = bodies()
         .filter((p) => !(state.pieces.get(p.key) || {}).placed)
         .sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
       if (specs.length) buildTray(specs);
@@ -1507,7 +1683,7 @@ function onResize() {
       cancelBeat();
       presentNext();
     }
-    if (state.level === 1) {
+    if (ordering()) {
       slotsEl.querySelectorAll(".slot").forEach((el) => {
         el.classList.toggle("asking", Number(el.dataset.slot) === state.step && !state.celebrating);
       });
