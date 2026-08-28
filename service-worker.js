@@ -17,8 +17,11 @@
    v7  2026-08-28  level 4, the dwarf planets: six new sprites, a rewritten
        app.js, and level 3's closing line, which now points at level 4.
    v8  2026-08-28  the voice for level 4 -- 18 new clips -- and the openers and
-       closing lines now spoken on every level, which changes audio-list.js. */
-const CACHE_NAME = "solar-order-v8";
+       closing lines now spoken on every level, which changes audio-list.js.
+   v9  2026-08-29  Makemake re-rendered to say "mah-kee mah-kee" rather than
+       "make make" -- one clip, 069, re-rendered through the pronunciation
+       override in the render manifest. */
+const CACHE_NAME = "solar-order-v9";
 
 /* Both lists are generated -- cache-list.js by tools/build-assets.py from the
    sprites it produced, audio-list.js by tools/build-audio.py from the clips it
@@ -62,11 +65,14 @@ self.addEventListener("install", (event) => {
   );
 });
 
-/* Cache isolation (private PR #288): evict only this app's own old caches - sibling apps on this origin keep theirs. */
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(
+        /* Evict only this app's old versions (solar-order-v*). Several repo apps
+           share one origin when published, each with its own worker — deleting
+           every cache that is not ours would evict the neighbours' offline caches.
+           Foreign cache names are not ours to touch. */
         keys.filter((k) => /^solar-order-v/.test(k) && k !== CACHE_NAME).map((k) => caches.delete(k))
       ))
       .then(() => self.clients.claim())
