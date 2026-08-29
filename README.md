@@ -1,6 +1,8 @@
 # Solar System Order
 
-A four-level game about where things live in the Solar System, for children.
+A five-level game about where things live in the Solar System, for children. Every
+one of the thirty moons named in the storybook is here — full parity with *Ari and
+Dot's Grand Tour of the Solar System*.
 
 **Live:** https://veeranuchlee.github.io/solar-system-game/
 
@@ -10,11 +12,15 @@ A four-level game about where things live in the Solar System, for children.
    Triton. One moon at a time, and the child taps the planet it goes around.
 3. **The moons hardly anybody knows** — Phobos, Deimos, Enceladus, and the five
    Uranian moons.
-4. **The five dwarf planets, in order out from the Sun** — Ceres in the asteroid
+4. **Uranus's ten little moons** — Cordelia, Ophelia, Juliet, Portia, Puck, Mab,
+   Caliban, Sycorax, Prospero and Setebos, each with the fact the storybook
+   teaches. One at a time, and they all go around Uranus, which ends the level
+   holding fifteen moons.
+5. **The five dwarf planets, in order out from the Sun** — Ceres in the asteroid
    belt, then Pluto, Haumea, Makemake and Eris far beyond Neptune — and then
-   Charon, Pluto's big moon. They get their own board rather than joining the
-   eight: Pluto is a real world and a dwarf planet, and the game never calls it a
-   planet or implies it stopped being one.
+   Pluto's five moons: Charon, Styx, Nix, Kerberos and Hydra. They get their own
+   board rather than joining the eight: Pluto is a real world and a dwarf planet,
+   and the game never calls it a planet or implies it stopped being one.
 
 The game asks and the child answers: a single tap on the right answer is the whole
 interaction. Dragging works too, for a child who would rather carry the planet
@@ -26,7 +32,7 @@ name and one fact about it.
 Built for a 9.7" iPad. No account, no network after the first load, and it installs
 to the home screen.
 
-**The voice is AI-generated. It is not a recording of a real person.** All 76 spoken
+**The voice is AI-generated. It is not a recording of a real person.** All 107 spoken
 lines are rendered ahead of time and ship as files; the game never calls a speech
 service, and there is nothing to switch on or sign into. Every interaction sound —
 the chimes, the celebration — is synthesised in the browser and ships no audio at

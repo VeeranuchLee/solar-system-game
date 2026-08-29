@@ -3,7 +3,8 @@
    Level 1  the eight planets, in order out from the Sun
    Level 2  the moons a child is likely to have heard of, onto their planet
    Level 3  the moons almost nobody has heard of, onto their planet
-   Level 4  the five dwarf planets, in order, and then Pluto's giant moon
+   Level 4  Uranus's ten little moons, one at a time
+   Level 5  the five dwarf planets, in order, and then Pluto's five moons
 
    The game asks and the child answers. Level 1 asks for one planet at a time in
    order -- the ring it is asking about blinks, the question names what it wants,
@@ -48,7 +49,7 @@ const PLANETS = [
    of existence, and a game that slid it into "put the planets in order" would
    teach exactly the thing that page refuses to.
 
-   Level 4 has its own board for the same reason. Eris averages sixty-eight times
+   Level 5 has its own board for the same reason. Eris averages sixty-eight times
    the Earth's distance from the Sun against Neptune's thirty, so putting the
    thirteen on one set of rings would need a made-up scale that quietly said Eris
    is just past Neptune. Its own board, and each one's own words for where it
@@ -95,7 +96,35 @@ const MOONS = [
 
   /* The biggest moon in the game, and that is the fact about it: Charon is over
      half Pluto's width, where our own Moon is barely a quarter of Earth's. */
-  { key: "charon",    name: "Charon",    of: "pluto",   level: 4, d: 30, fact: "Half as wide as Pluto. The two of them dance around each other." },
+  { key: "charon",    name: "Charon",    of: "pluto",   level: 5, d: 30, fact: "Half as wide as Pluto. The two of them dance around each other." },
+
+  /* Full moon parity with the storybook, owner decision 2026-08-29: every named
+     moon the children met in Ari and Dot exists here too. These ten are Page 16's
+     minor-moon roster, and the facts are the book's own nameplate lines, so the
+     game teaches exactly what the book taught. `d` keeps the book's honest order
+     of bigness among small moons -- Puck, Portia and Sycorax are the wide ones,
+     Cordelia and Ophelia the narrow ones, Mab the smallest. */
+  { key: "cordelia", name: "Cordelia", of: "uranus", level: 4, d: 14, fact: "It and Ophelia keep the bright epsilon ring thin." },
+  { key: "ophelia",  name: "Ophelia",  of: "uranus", level: 4, d: 14, fact: "It herds that same bright ring from the outside." },
+  { key: "juliet",   name: "Juliet",   of: "uranus", level: 4, d: 16, fact: "This little moon races around Uranus in half a day." },
+  { key: "portia",   name: "Portia",   of: "uranus", level: 4, d: 17, fact: "It leads a crowded family of tiny inner moons." },
+  { key: "puck",     name: "Puck",     of: "uranus", level: 4, d: 17, fact: "Voyager is the only visitor to see this moon close up." },
+  { key: "mab",      name: "Mab",      of: "uranus", level: 4, d: 13, fact: "Its dust supplies the faint outer mu ring." },
+  { key: "caliban",  name: "Caliban",  of: "uranus", level: 4, d: 16, fact: "This far moon circles Uranus the opposite way." },
+  { key: "sycorax",  name: "Sycorax",  of: "uranus", level: 4, d: 17, fact: "The biggest far-out moon is a faint reddish speck." },
+  { key: "prospero", name: "Prospero", of: "uranus", level: 4, d: 15, fact: "We have only ever seen it as a moving speck." },
+  { key: "setebos",  name: "Setebos",  of: "uranus", level: 4, d: 15, fact: "This far moon takes about six years to go around." },
+
+  /* Pluto's four small moons. The storybook names them once, in one sentence --
+     "Pluto has five known moons: Charon, and four much smaller ones named Styx,
+     Nix, Kerberos, and Hydra" -- and gives them no individual facts, so these four
+     facts are NOT storybook material: they are concise, checked astronomy
+     (discovery years and positions, all Hubble-era and uncontested), recorded as
+     such in the task record. Kept as plain as the source warrants. */
+  { key: "styx",     name: "Styx",     of: "pluto",   level: 5, d: 13, fact: "The smallest of Pluto's five little moons." },
+  { key: "nix",      name: "Nix",      of: "pluto",   level: 5, d: 15, fact: "Found by telescope in 2005, together with Hydra." },
+  { key: "kerberos", name: "Kerberos", of: "pluto",   level: 5, d: 13, fact: "A small dark moon, found in 2011." },
+  { key: "hydra",    name: "Hydra",    of: "pluto",   level: 5, d: 15, fact: "The furthest out of all Pluto's moons." },
 ];
 
 const NO_MOONS = {
@@ -130,7 +159,7 @@ const ORBIT_SPOTS = [
   { x: 0.940, a: 1.040, up: false },
 ];
 
-/* Level 4's five rings. Same construction as ORBIT_SPOTS -- `a` is always a
+/* Level 5's five rings. Same construction as ORBIT_SPOTS -- `a` is always a
    little larger than `x`, so every ring lands on a real orbit rather than at the
    far end of one -- and the same alternating `up`, which is what keeps five
    bodies from crowding onto one line. */
@@ -147,7 +176,7 @@ const DWARF_SPOTS = [
 
    `order` is a roster to be put in place from the Sun outwards, one body at a
    time. `hosts` is a board that is simply set out, and the level hands over
-   moons instead. A level may do both: level 4 orders the five dwarf planets and
+   moons instead. A level may do both: level 5 orders the five dwarf planets and
    then gives Pluto its moon, which is why the mode lives in `state.mode` and not
    in the level number.
 
@@ -194,10 +223,28 @@ const LEVELS = {
     title: "The moons hardly anybody knows",
     open: "Tap the planet this moon goes around.",
     doneTitle: "You know them all!",
-    doneText: "Every planet in order, and every moon at home. Now for the dwarf planets.",
+    doneText: "Every planet in order, and every moon at home. Now for Uranus's ten little moons.",
     next: "Start level 4",
   },
+  /* Parity with the storybook, 2026-08-29. Page 16 gives these ten their own
+     tappable introductions, so they get a level of their own rather than being
+     poured into level 3: eighteen questions in one level is a marathon, and
+     "hardly anybody knows" was true of the first eight in a way it is not of a
+     deliberate tour of one planet's family. The `open` line is deliberately the
+     same string as level 3's, so it re-uses the same rendered clip. */
   4: {
+    hosts: PLANETS,
+    spots: ORBIT_SPOTS,
+    askHost: "Which planet does %s go around?",
+    card: ["puck", "sycorax", "portia"],
+    cardFrom: "moons",
+    title: "Uranus's ten little moons",
+    open: "Tap the planet this moon goes around.",
+    doneTitle: "Ten more moons for Uranus!",
+    doneText: "Ten more little moons, all going around Uranus. Now for the dwarf planets.",
+    next: "Start level 5",
+  },
+  5: {
     order: DWARFS,
     spots: DWARF_SPOTS,
     askFirst: "Which dwarf planet is closest to the Sun?",
@@ -207,18 +254,18 @@ const LEVELS = {
     /* Shown once the five are in order, because "put the dwarf planets in order"
        is no longer what the level is doing. Not a spoken line -- a title never
        is -- so it costs nothing to be accurate here. */
-    moonTitle: "Pluto's big moon",
+    moonTitle: "Pluto's five moons",
     card: ["pluto", "haumea", "eris"],
     cardFrom: "planets",
     title: "Put the dwarf planets in order",
     open: "Tap the dwarf planet this moon goes around.",
     doneTitle: "You know the dwarf planets!",
-    doneText: "Ceres in the asteroid belt, four more far beyond Neptune, and Charon home with Pluto.",
+    doneText: "Ceres in the asteroid belt, four more far beyond Neptune, and Pluto's five moons all home.",
     next: "Play it all again",
   },
 };
 
-const TOP_LEVEL = 4;
+const TOP_LEVEL = 5;
 
 const SUN_AT = { x: 0.028, y: 0.50, d: 0.27 }; /* fractions of stage width/height */
 /* Flat enough that a whole orbit fits on the stage instead of being cropped to
@@ -280,7 +327,7 @@ const state = {
   level: 1,
   unlocked: 1,
   /* "order" is putting a roster in place from the Sun outwards; "home" is a moon
-     in hand looking for the body it goes around. Level 4 is the first and then
+     in hand looking for the body it goes around. Level 5 is the first and then
      the second, so this cannot be read off the level number. */
   mode: "order",
   step: 0,          /* an order level: which body is being asked for */
@@ -456,7 +503,7 @@ function nextBeat(floor, fn) {
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 /* The large bodies on this level's board, and the orbits they stand on. Levels
-   1 to 3 are the eight planets; level 4 is the five dwarf planets and never shows
+   1 to 4 are the eight planets; level 5 is the five dwarf planets and never shows
    a planet at all. */
 const bodies = () => LEVELS[state.level].order || LEVELS[state.level].hosts;
 const spots = () => LEVELS[state.level].spots;
@@ -778,9 +825,18 @@ function setMoonOrbit(moon) {
   if (!at) return;
   const slot = state.layout.slots[at.slot];
   const hostR = (bodyOf(moon.of).d * state.scale) / 2;
+  /* Ring spacing steps in above the fifth moon. Before moon parity the deepest
+     stack any host could gather was Jupiter's four, and 8.5px a ring never had
+     to answer for anything; Uranus can now hold fifteen at the end of level 4,
+     and at 8.5px a time the outermost ring would reach across into the far side
+     of the board. The first five keep the old spacing so existing levels render
+     exactly as they did; moons beyond the fifth step in more tightly. */
+  const spread = moon.ring <= 5
+    ? moon.ring * 8.5
+    : 5 * 8.5 + (moon.ring - 5) * 6.0;
   moon.cx = slot.x;
   moon.cy = slot.y;
-  moon.rx = hostR + (11 + moon.ring * 8.5) * state.scale;
+  moon.rx = hostR + (11 + spread) * state.scale;
   moon.ry = moon.rx * 0.42;
 }
 
@@ -809,12 +865,12 @@ function startLevel(level) {
   state.mode = spec.order ? "order" : "home";
   /* An order level has nothing on the deck, and leaving the last level's moon in
      here is a live wire: onResize() puts `current` back on the deck, so a turn of
-     the iPad during level 4's ordering would have pushed Oberon into the
+     the iPad during level 5's ordering would have pushed Oberon into the
      dwarf-planet queue. */
   state.current = null;
 
   if (spec.order) {
-    /* An order level always starts from an empty board. Level 4's board is a
+    /* An order level always starts from an empty board. Level 5's board is a
        different five bodies on a different five orbits, so nothing from the
        level before it can be kept. */
     state.home.clear();
@@ -851,7 +907,7 @@ function startLevel(level) {
   openPhase(ask);
 }
 
-/* Level 4, once its five are in order: the rings have nothing left to hold, so
+/* Level 5, once its five are in order: the rings have nothing left to hold, so
    they go, and from here the level behaves exactly like levels 2 and 3 -- one
    moon on the deck, and the board is the five dwarf planets rather than the eight
    planets. */
@@ -917,7 +973,7 @@ function presentNext() {
    An ordering phase is opened by its title. "Put the planets in order" already IS
    the instruction, and it is the heading above the board, so the child hears the
    words they are looking at. A moon phase is opened by `open`, the line written
-   for it. Level 4 does both in turn and gets both, in turn.
+   for it. Level 5 does both in turn and gets both, in turn.
 
    Spoken once, at the top of the phase, and the first question waits for it --
    speak() would otherwise silence the instruction with the question, which is the
@@ -979,11 +1035,11 @@ function buildSlots() {
      measure() ends in placeEverything() -> layoutSlots() with the layout that
      belongs to the level being started. Laying out here instead used the layout
      of the level being LEFT, which was harmless only while every level had eight
-     slots. Level 4 has five: leaving level 4 built eight fresh slot divs and
+     slots. Level 5 has five: leaving level 5 built eight fresh slot divs and
      indexed them into a five-slot layout, so slot 6 read `undefined.x` and threw
      -- inside startLevel, before the tray, the caption or the question had been
-     rebuilt. The child was left with level 1's heading over level 4's board and
-     a game that no longer responded. "Play it all again" on level 4's own
+     rebuilt. The child was left with level 1's heading over level 5's board and
+     a game that no longer responded. "Play it all again" on level 5's own
      finishing card is that path. */
 }
 
@@ -1038,7 +1094,7 @@ function landBody(piece, slotIndex) {
   state.step = slotIndex + 1;
   /* Whichever comes next waits for the fact to be finished being said. */
   if (state.step < bodies().length) nextBeat(READ_FACT, ask);
-  /* The roster is in place. Level 4 still owes Pluto its moon; levels that owe
+  /* The roster is in place. Level 5 still owes Pluto its moons; levels that owe
      nothing finish here. */
   else if (moonsFor(state.level).length) nextBeat(READ_FACT, startMoonPhase);
   else nextBeat(700, finishLevel);
@@ -1064,8 +1120,10 @@ function landMoon(piece, hostKey) {
     el,
     angle: Math.random() * Math.PI * 2,
     /* Inner moons run faster, which is true and also stops a stack of moons
-       moving as one rigid ring. Triton runs backwards, because it does. */
-    speed: (0.42 - ring * 0.06) * (piece.spec.key === "triton" ? -1 : 1),
+       moving as one rigid ring. Triton runs backwards, because it does. The
+       floor exists because Uranus can now stack fifteen: without it the twelfth
+       moon of a family runs backwards, which is Triton's fact, not Uranus's. */
+    speed: Math.max(0.12, 0.42 - ring * 0.06) * (piece.spec.key === "triton" ? -1 : 1),
   };
   state.orbiting.push(moon);
   setMoonOrbit(moon);

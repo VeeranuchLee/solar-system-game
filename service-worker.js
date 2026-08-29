@@ -20,8 +20,12 @@
        closing lines now spoken on every level, which changes audio-list.js.
    v9  2026-08-29  Makemake re-rendered to say "mah-kee mah-kee" rather than
        "make make" -- one clip, 069, re-rendered through the pronunciation
-       override in the render manifest. */
-const CACHE_NAME = "solar-order-v9";
+       override in the render manifest.
+   v10 2026-08-29  Full moon parity with the storybook: fourteen new moons (ten
+       Uranian minors plus Styx, Nix, Kerberos, Hydra), a new level 4 for
+       Uranus's family, the dwarf level now 5 with Pluto's five moons, 33 new
+       clips and two reworded closers, 14 new sprites. */
+const CACHE_NAME = "solar-order-v10";
 
 /* Both lists are generated -- cache-list.js by tools/build-assets.py from the
    sprites it produced, audio-list.js by tools/build-audio.py from the clips it
