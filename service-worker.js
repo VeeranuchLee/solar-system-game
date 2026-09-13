@@ -24,8 +24,43 @@
    v10 2026-08-29  Full moon parity with the storybook: fourteen new moons (ten
        Uranian minors plus Styx, Nix, Kerberos, Hydra), a new level 4 for
        Uranus's family, the dwarf level now 5 with Pluto's five moons, 33 new
-       clips and two reworded closers, 14 new sprites. */
-const CACHE_NAME = "solar-order-v10";
+       clips and two reworded closers, 14 new sprites.
+   v11 2026-09-06  Thirty-nine more named moons, 30 -> 69, and the moon levels
+       re-cut by whether anyone has ever SEEN the moon: levels 3-4 are bodies a
+       spacecraft resolved, 5-7 are points of light, 8 is the dwarf planets and
+       now eight moons. 39 new sprites, twelve of them carrying cited markings.
+       The narration manifest now ships only the lines that have clips, so the
+       95 new lines are shown rather than spoken until they are rendered.
+   v12 2026-09-06  Those 95 lines rendered and transcoded, so all 69 moons are
+       now spoken: 194 clips in audio-list.js, up from 107, and audioReady is
+       true again for the whole game. Nothing about the app changed -- this is
+       the voice catching up with the moons v11 added.
+   v13 2026-09-06  Storybook parity closed, 69 -> 77 moons: the eight the Moon
+       Explorer names that this game did not carry -- Saturn's Janus, Epimetheus,
+       Prometheus, Pandora, Pan, Atlas and Daphnis, plus Jupiter's Himalia.
+       check-moons.py had been printing them by name on every run since it started
+       reading the storybook's own table instead of a transcribed list of thirty.
+       8 new sprites: seven resolved by Cassini and marked accordingly, Himalia a
+       plain lump because nobody has seen its surface. Pan, Atlas and Daphnis are
+       the first bodies drawn with `flange` -- their equatorial skirt of ring ice
+       changes the OUTLINE, which is what "shaped like a ravioli" actually means.
+       Their 16 narration lines are not rendered yet, so they are shown rather
+       than spoken and clips.json says so.
+   v14 2026-09-06  Those 16 lines rendered and transcoded, so all 77 moons now
+       speak: 210 clips in audio-list.js, up from 194, and clips.json is complete
+       again with pending back to 0. Nothing about the app changed -- this is the
+       voice catching up with the eight moons v13 added.
+   v15 2026-09-06  Eight orphaned clips retired. They were superseded level
+       titles and closers from the v11 re-cut and no manifest had referenced them
+       since -- audio-list.js held 210 while 218 .m4a sat on disk, so they were
+       published and downloaded by nothing. Proof they were dead: removing them
+       left audio-list.js, cache-list.js and both narration manifests
+       byte-identical. Archived to the sidecar first, because five of the eight
+       had no surviving .mp3 master. app.js's header also stopped claiming the
+       game has four levels. */
+// v15 also carries (added 2026-09-13, never published under any version): #519, Umbriel is "The darkest of the
+//   five big moons of Uranus." rather than "of all the moons of Uranus", re-rendered as clip 224; clip 044 retired.
+const CACHE_NAME = "solar-order-v15";
 
 /* Both lists are generated -- cache-list.js by tools/build-assets.py from the
    sprites it produced, audio-list.js by tools/build-audio.py from the clips it

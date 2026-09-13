@@ -1,10 +1,19 @@
-/* Solar System Order — four levels of putting things where they belong.
+/* Solar System Order — eight levels of putting things where they belong.
 
    Level 1  the eight planets, in order out from the Sun
    Level 2  the moons a child is likely to have heard of, onto their planet
-   Level 3  the moons almost nobody has heard of, onto their planet
-   Level 4  Uranus's ten little moons, one at a time
-   Level 5  the five dwarf planets, in order, and then Pluto's five moons
+   Level 3  moons a spaceship has flown past and photographed
+   Level 4  more of the same -- every one of these has a resolved surface
+   Level 5  little moons among the rings; none has ever been resolved
+   Level 6  more moons nobody has seen as anything but a point
+   Level 7  the far-out moons, on wide, slow, tilted orbits
+   Level 8  the dwarf planets, in order, and then their moons
+
+   Levels 3 to 7 are split by whether anyone has ever SEEN the moon -- the
+   2026-09-06 owner decision, and the one idea here a child will not get from a
+   video. See the note above LEVELS. This header said "four levels" and listed
+   the pre-2026-09-06 shape until 2026-09-06; it is the first thing anyone reads,
+   so it is worth keeping true.
 
    The game asks and the child answers. Level 1 asks for one planet at a time in
    order -- the ring it is asking about blinks, the question names what it wants,
@@ -90,13 +99,13 @@ const MOONS = [
   { key: "enceladus", name: "Enceladus", of: "saturn",  level: 3, d: 17, fact: "It shoots fountains of ice out into space." },
   { key: "miranda",   name: "Miranda",   of: "uranus",  level: 3, d: 16, fact: "Cliffs so tall that a fall would last for minutes." },
   { key: "ariel",     name: "Ariel",     of: "uranus",  level: 3, d: 19, fact: "The brightest of all the moons of Uranus." },
-  { key: "umbriel",   name: "Umbriel",   of: "uranus",  level: 3, d: 19, fact: "The darkest of all the moons of Uranus." },
-  { key: "titania",   name: "Titania",   of: "uranus",  level: 3, d: 21, fact: "The biggest moon of Uranus." },
-  { key: "oberon",    name: "Oberon",    of: "uranus",  level: 3, d: 20, fact: "Old, dark, and covered all over in craters." },
+  { key: "umbriel",   name: "Umbriel",   of: "uranus",  level: 4, d: 19, fact: "The darkest of the five big moons of Uranus." },
+  { key: "titania",   name: "Titania",   of: "uranus",  level: 4, d: 21, fact: "The biggest moon of Uranus." },
+  { key: "oberon",    name: "Oberon",    of: "uranus",  level: 4, d: 20, fact: "Old, dark, and covered all over in craters." },
 
   /* The biggest moon in the game, and that is the fact about it: Charon is over
      half Pluto's width, where our own Moon is barely a quarter of Earth's. */
-  { key: "charon",    name: "Charon",    of: "pluto",   level: 5, d: 30, fact: "Half as wide as Pluto. The two of them dance around each other." },
+  { key: "charon",    name: "Charon",    of: "pluto",   level: 8, d: 30, fact: "Half as wide as Pluto. The two of them dance around each other." },
 
   /* Full moon parity with the storybook, owner decision 2026-08-29: every named
      moon the children met in Ari and Dot exists here too. These ten are Page 16's
@@ -104,16 +113,16 @@ const MOONS = [
      game teaches exactly what the book taught. `d` keeps the book's honest order
      of bigness among small moons -- Puck, Portia and Sycorax are the wide ones,
      Cordelia and Ophelia the narrow ones, Mab the smallest. */
-  { key: "cordelia", name: "Cordelia", of: "uranus", level: 4, d: 14, fact: "It and Ophelia keep the bright epsilon ring thin." },
-  { key: "ophelia",  name: "Ophelia",  of: "uranus", level: 4, d: 14, fact: "It herds that same bright ring from the outside." },
-  { key: "juliet",   name: "Juliet",   of: "uranus", level: 4, d: 16, fact: "This little moon races around Uranus in half a day." },
-  { key: "portia",   name: "Portia",   of: "uranus", level: 4, d: 17, fact: "It leads a crowded family of tiny inner moons." },
+  { key: "cordelia", name: "Cordelia", of: "uranus", level: 5, d: 14, fact: "It and Ophelia keep the bright epsilon ring thin." },
+  { key: "ophelia",  name: "Ophelia",  of: "uranus", level: 5, d: 14, fact: "It herds that same bright ring from the outside." },
+  { key: "juliet",   name: "Juliet",   of: "uranus", level: 5, d: 16, fact: "This little moon races around Uranus in half a day." },
+  { key: "portia",   name: "Portia",   of: "uranus", level: 5, d: 17, fact: "It leads a crowded family of tiny inner moons." },
   { key: "puck",     name: "Puck",     of: "uranus", level: 4, d: 17, fact: "Voyager is the only visitor to see this moon close up." },
-  { key: "mab",      name: "Mab",      of: "uranus", level: 4, d: 13, fact: "Its dust supplies the faint outer mu ring." },
-  { key: "caliban",  name: "Caliban",  of: "uranus", level: 4, d: 16, fact: "This far moon circles Uranus the opposite way." },
-  { key: "sycorax",  name: "Sycorax",  of: "uranus", level: 4, d: 17, fact: "The biggest far-out moon is a faint reddish speck." },
-  { key: "prospero", name: "Prospero", of: "uranus", level: 4, d: 15, fact: "We have only ever seen it as a moving speck." },
-  { key: "setebos",  name: "Setebos",  of: "uranus", level: 4, d: 15, fact: "This far moon takes about six years to go around." },
+  { key: "mab",      name: "Mab",      of: "uranus", level: 6, d: 13, fact: "Its dust supplies the faint outer mu ring." },
+  { key: "caliban",  name: "Caliban",  of: "uranus", level: 7, d: 16, fact: "This far moon circles Uranus the opposite way." },
+  { key: "sycorax",  name: "Sycorax",  of: "uranus", level: 7, d: 17, fact: "The biggest far-out moon is a faint reddish speck." },
+  { key: "prospero", name: "Prospero", of: "uranus", level: 7, d: 15, fact: "We have only ever seen it as a moving speck." },
+  { key: "setebos",  name: "Setebos",  of: "uranus", level: 7, d: 15, fact: "This far moon takes about six years to go around." },
 
   /* Pluto's four small moons. The storybook names them once, in one sentence --
      "Pluto has five known moons: Charon, and four much smaller ones named Styx,
@@ -121,10 +130,112 @@ const MOONS = [
      facts are NOT storybook material: they are concise, checked astronomy
      (discovery years and positions, all Hubble-era and uncontested), recorded as
      such in the task record. Kept as plain as the source warrants. */
-  { key: "styx",     name: "Styx",     of: "pluto",   level: 5, d: 13, fact: "The smallest of Pluto's five little moons." },
-  { key: "nix",      name: "Nix",      of: "pluto",   level: 5, d: 15, fact: "Found by telescope in 2005, together with Hydra." },
-  { key: "kerberos", name: "Kerberos", of: "pluto",   level: 5, d: 13, fact: "A small dark moon, found in 2011." },
-  { key: "hydra",    name: "Hydra",    of: "pluto",   level: 5, d: 15, fact: "The furthest out of all Pluto's moons." },
+  { key: "styx",     name: "Styx",     of: "pluto",   level: 8, d: 13, fact: "The smallest of Pluto's five little moons." },
+  { key: "nix",      name: "Nix",      of: "pluto",   level: 8, d: 15, fact: "Found by telescope in 2005, together with Hydra." },
+  { key: "kerberos", name: "Kerberos", of: "pluto",   level: 8, d: 13, fact: "A small dark moon, found in 2011." },
+  { key: "hydra",    name: "Hydra",    of: "pluto",   level: 8, d: 15, fact: "The furthest out of all Pluto's moons." },
+
+  /* ------------------------------------------------------------------------
+     The 2026-09-06 expansion: 39 more named moons, taking the game from the
+     storybook's 30 to 69. Sourced in `qc/moon-roster.json`, which carries each
+     one's diameter, colour, the instrument that resolved it (or `null`), the
+     fact below and the claim that fact rests on.
+
+     `resolved` is load-bearing twice over. It decides the level -- seen moons
+     in 3 and 4, never-seen ones in 5, 6 and 7 -- and it decides whether the
+     sprite may carry markings at all. A body no instrument has resolved is
+     drawn as a plain tinted lump, which is not a shortcut: it is the only
+     honest picture of something nobody has seen. `PAGE-16-MOON-NAMES-PLAN.md`
+     sets that rule and this table obeys it.
+     ------------------------------------------------------------------------ */
+
+  /* Level 3 -- moons a spacecraft has flown past and photographed. */
+  { key: "amalthea",  name: "Amalthea",   of: "jupiter",  level: 3, d: 14, fact: "The reddest thing in the whole Solar System." },
+  { key: "thebe",     name: "Thebe",      of: "jupiter",  level: 3, d: 14, fact: "Its dust makes one of Jupiter's faint rings." },
+  { key: "mimas",     name: "Mimas",      of: "saturn",   level: 3, d: 16, fact: "One crater is so wide it covers a third of this moon." },
+  { key: "iapetus",   name: "Iapetus",    of: "saturn",   level: 3, d: 19, fact: "One side is dark as coal and the other is bright as snow." },
+  { key: "rhea",      name: "Rhea",       of: "saturn",   level: 3, d: 19, fact: "Saturn's second biggest moon, and it is nearly all ice." },
+  { key: "proteus",   name: "Proteus",    of: "neptune",  level: 3, d: 16, fact: "Neptune's biggest moon after Triton, and it is boxy, not round." },
+
+  /* Level 4 -- more of the same; every one of these has a resolved surface. */
+  { key: "metis",     name: "Metis",      of: "jupiter",  level: 4, d: 13, fact: "The closest moon to Jupiter of them all." },
+  { key: "tethys",    name: "Tethys",     of: "saturn",   level: 4, d: 18, fact: "A canyon runs almost all the way around it." },
+  { key: "dione",     name: "Dione",      of: "saturn",   level: 4, d: 18, fact: "Bright cliffs of ice stripe one whole side." },
+  { key: "hyperion",  name: "Hyperion",   of: "saturn",   level: 4, d: 15, fact: "It tumbles as it goes, so the same side never faces Saturn." },
+  { key: "phoebe",    name: "Phoebe",     of: "saturn",   level: 4, d: 15, fact: "It goes around Saturn backwards, and it came from far away." },
+  { key: "larissa",   name: "Larissa",    of: "neptune",  level: 4, d: 15, fact: "Voyager 2 is the only spacecraft ever to see it." },
+
+  /* Level 5 -- little moons among the rings. None has ever been resolved. */
+  { key: "adrastea",  name: "Adrastea",   of: "jupiter",  level: 5, d: 13, fact: "So small that even up close it is only a dot." },
+  { key: "bianca",    name: "Bianca",     of: "uranus",   level: 5, d: 13, fact: "Voyager 2 spotted it in 1986, and no one has been back." },
+  { key: "cressida",  name: "Cressida",   of: "uranus",   level: 5, d: 14, fact: "It circles Uranus in only eleven hours." },
+  { key: "desdemona", name: "Desdemona",  of: "uranus",   level: 5, d: 13, fact: "It shares a crowded lane with Cressida and Juliet." },
+  { key: "naiad",     name: "Naiad",      of: "neptune",  level: 5, d: 13, fact: "The closest moon to Neptune, and it flies on a tilted path." },
+  { key: "thalassa",  name: "Thalassa",   of: "neptune",  level: 5, d: 14, fact: "Shaped like a flat disc, not a ball." },
+  { key: "despina",   name: "Despina",    of: "neptune",  level: 5, d: 14, fact: "It races around Neptune in just eight hours." },
+
+  /* Level 6 -- more moons nobody has ever seen as anything but a point. */
+  { key: "rosalind",  name: "Rosalind",   of: "uranus",   level: 6, d: 13, fact: "Named after the heroine who runs away to the forest." },
+  { key: "cupid",     name: "Cupid",      of: "uranus",   level: 6, d: 13, fact: "The faintest moon of Uranus, and the hardest to see." },
+  { key: "belinda",   name: "Belinda",    of: "uranus",   level: 6, d: 14, fact: "It goes around Uranus in fifteen hours." },
+  { key: "perdita",   name: "Perdita",    of: "uranus",   level: 6, d: 13, fact: "It was hiding in Voyager's photographs for thirteen years." },
+  { key: "francisco", name: "Francisco",  of: "uranus",   level: 6, d: 13, fact: "The closest of Uranus's far-out moons." },
+  { key: "stephano",  name: "Stephano",   of: "uranus",   level: 6, d: 13, fact: "It travels the opposite way to Uranus's big moons." },
+  { key: "galatea",   name: "Galatea",    of: "neptune",  level: 6, d: 14, fact: "It keeps Neptune's crumbly ring from spreading out." },
+  { key: "hippocamp", name: "Hippocamp",  of: "neptune",  level: 6, d: 13, fact: "The newest moon of Neptune, found in 2013." },
+  { key: "nereid",    name: "Nereid",     of: "neptune",  level: 6, d: 15, fact: "Its path swings closer and further than any other big moon." },
+  { key: "halimede",  name: "Halimede",   of: "neptune",  level: 6, d: 13, fact: "Found in 2002, going around Neptune backwards." },
+
+  /* Level 7 -- the far-out moons, all on wide, slow, tilted orbits. */
+  { key: "trinculo",  name: "Trinculo",   of: "uranus",   level: 7, d: 13, fact: "The smallest of Uranus's far-out moons." },
+  { key: "margaret",  name: "Margaret",   of: "uranus",   level: 7, d: 13, fact: "The only far-out moon of Uranus that goes the right way round." },
+  { key: "ferdinand", name: "Ferdinand",  of: "uranus",   level: 7, d: 13, fact: "The furthest moon of Uranus, and it takes eight years." },
+  { key: "sao",       name: "Sao",        of: "neptune",  level: 7, d: 13, fact: "It takes eight years to go around Neptune once." },
+  { key: "laomedeia", name: "Laomedeia",  of: "neptune",  level: 7, d: 13, fact: "Named after a sea nymph, and found by telescope in 2002." },
+  { key: "psamathe",  name: "Psamathe",   of: "neptune",  level: 7, d: 13, fact: "It goes around Neptune backwards, far out in the dark." },
+  { key: "neso",      name: "Neso",       of: "neptune",  level: 7, d: 13, fact: "It is further from its planet than any other moon we know." },
+
+  /* Level 8 -- the dwarf-planet moons that are not Pluto's. */
+  { key: "dysnomia",  name: "Dysnomia",   of: "eris",     level: 8, d: 17, fact: "Eris has one moon, and this is it." },
+  { key: "hiiaka",    name: "Hi'iaka",    of: "haumea",   level: 8, d: 15, fact: "The bigger of Haumea's two moons, made of clean ice." },
+  { key: "namaka",    name: "Namaka",     of: "haumea",   level: 8, d: 14, fact: "The smaller of Haumea's two moons." },
+
+  /* ------------------------------------------------------------------------
+     Storybook parity, owner decision 2026-09-06: the eight moons the Moon
+     Explorer names that this game did not carry. `check-moons.py` read the
+     storybook's own table, found them missing and printed them by name on every
+     run until this closed the gap -- see its STORYBOOK_ABSENT, now empty.
+
+     The facts are the book's own Moon Explorer lines, lightly trimmed, on the
+     same principle as Page 16's ten above: a child who meets Daphnis in the book
+     and then here should be told the same thing twice, not two different things.
+
+     Seven of the eight are Saturn's ring shepherds and co-orbitals, so Saturn is
+     heavy in levels 3 and 4 now. That is the same answer the unseen levels give
+     for Uranus: it is a fact about the Solar System, not a layout choice, and
+     `shuffleApart` is what stops the repeats landing next to each other.
+     ------------------------------------------------------------------------ */
+
+  /* Level 3 -- Cassini flew close to all four and resolved them, so they carry
+     marks. Janus and Epimetheus are a pair and their facts point at each other,
+     so they are met in the same level; Prometheus and Pandora likewise. */
+  { key: "janus",      name: "Janus",      of: "saturn",  level: 3, d: 15, fact: "It swaps orbits with Epimetheus every four years." },
+  { key: "epimetheus", name: "Epimetheus", of: "saturn",  level: 3, d: 14, fact: "The other half of the swap. Same path, four years apart." },
+  { key: "prometheus", name: "Prometheus", of: "saturn",  level: 3, d: 14, fact: "One of two sheepdog moons that keep a thin ring in line." },
+  { key: "pandora",    name: "Pandora",    of: "saturn",  level: 3, d: 14, fact: "The other sheepdog, working the far side of the same ring." },
+
+  /* Level 4 -- the three that fly inside gaps in the rings. Cassini's 2017
+     close passes gave us their shapes, and the ridge of swept-up ring material
+     round each middle is why the book calls Pan a ravioli. */
+  { key: "pan",        name: "Pan",        of: "saturn",  level: 4, d: 13, fact: "Shaped like a ravioli, with a ridge round its middle." },
+  { key: "atlas",      name: "Atlas",      of: "saturn",  level: 4, d: 13, fact: "Even flatter than Pan, like a little flying saucer." },
+  { key: "daphnis",    name: "Daphnis",    of: "saturn",  level: 4, d: 13, fact: "It flies down a gap in the rings and makes waves." },
+
+  /* Level 7 -- Himalia is the one of the eight nobody has resolved. Cassini
+     photographed it in 2000 at about four pixels, which settled its outline and
+     nothing else, so it is a plain lump and it belongs with the far-out moons. */
+  { key: "himalia",    name: "Himalia",    of: "jupiter", level: 7, d: 14, fact: "The biggest of Jupiter's far-out, dark little moons." },
+
 ];
 
 const NO_MOONS = {
@@ -211,40 +322,85 @@ const LEVELS = {
     title: "The moons everybody knows",
     open: "Tap the planet this moon goes around.",
     doneTitle: "The famous moons are home!",
-    doneText: "Now for the moons that hardly anybody has heard of.",
+    doneText: "Now for moons that a spaceship has flown right past and photographed.",
     next: "Start level 3",
   },
+  /* Levels 3 to 7 are split by whether anyone has ever SEEN the moon, which is
+     the 2026-09-06 owner decision and the one idea in this game that a child
+     will not get from a video. Levels 3 and 4 are moons a spacecraft resolved:
+     they have craters, cliffs and colours, and their sprites carry markings.
+     Levels 5, 6 and 7 are moons no instrument has ever resolved: they are
+     points of light, and their sprites are plain tinted lumps. The child can
+     see the difference on the deck before anyone explains it.
+
+     The split also answers the owner's complaint about the old level 4, which
+     asked ten consecutive questions whose answer was always Uranus: "if the
+     game is just click on the same planet throughout the level, it is not fun."
+     Seen and unseen both cut across planets, so every level now mixes hosts.
+     Uranus still owns 21 of the 33 unseen moons -- that is a fact about the
+     Solar System, not a layout choice -- so `shuffleApart` spaces repeated
+     answers as well as confusable names. */
   3: {
     hosts: PLANETS,
     spots: ORBIT_SPOTS,
     askHost: "Which planet does %s go around?",
-    card: ["titania", "enceladus", "miranda"],
+    card: ["iapetus", "miranda", "mimas"],
     cardFrom: "moons",
-    title: "The moons hardly anybody knows",
+    title: "Moons a spaceship has seen",
     open: "Tap the planet this moon goes around.",
-    doneTitle: "You know them all!",
-    doneText: "Every planet in order, and every moon at home. Now for Uranus's ten little moons.",
+    doneTitle: "You have met them all!",
+    doneText: "A spaceship took a picture of every one of those. Here are some more.",
     next: "Start level 4",
   },
-  /* Parity with the storybook, 2026-08-29. Page 16 gives these ten their own
-     tappable introductions, so they get a level of their own rather than being
-     poured into level 3: eighteen questions in one level is a marathon, and
-     "hardly anybody knows" was true of the first eight in a way it is not of a
-     deliberate tour of one planet's family. The `open` line is deliberately the
-     same string as level 3's, so it re-uses the same rendered clip. */
   4: {
     hosts: PLANETS,
     spots: ORBIT_SPOTS,
     askHost: "Which planet does %s go around?",
-    card: ["puck", "sycorax", "portia"],
+    card: ["tethys", "oberon", "hyperion"],
     cardFrom: "moons",
-    title: "Uranus's ten little moons",
+    title: "More moons we have seen",
     open: "Tap the planet this moon goes around.",
-    doneTitle: "Ten more moons for Uranus!",
-    doneText: "Ten more little moons, all going around Uranus. Now for the dwarf planets.",
+    doneTitle: "Every one of them is home!",
+    doneText: "That is every moon we have seen close up. Now for the ones nobody has ever seen.",
     next: "Start level 5",
   },
   5: {
+    hosts: PLANETS,
+    spots: ORBIT_SPOTS,
+    askHost: "Which planet does %s go around?",
+    card: ["portia", "cordelia", "galatea"],
+    cardFrom: "moons",
+    title: "Little moons among the rings",
+    open: "Tap the planet this moon goes around.",
+    doneTitle: "All of them are home!",
+    doneText: "Those little moons live in among the rings. Here are more that nobody has seen.",
+    next: "Start level 6",
+  },
+  6: {
+    hosts: PLANETS,
+    spots: ORBIT_SPOTS,
+    askHost: "Which planet does %s go around?",
+    card: ["belinda", "nereid", "perdita"],
+    cardFrom: "moons",
+    title: "Moons nobody has ever seen",
+    open: "Tap the planet this moon goes around.",
+    doneTitle: "You know them by name!",
+    doneText: "Nobody has ever seen one of those. Now for the moons that live furthest away.",
+    next: "Start level 7",
+  },
+  7: {
+    hosts: PLANETS,
+    spots: ORBIT_SPOTS,
+    askHost: "Which planet does %s go around?",
+    card: ["sycorax", "neso", "ferdinand"],
+    cardFrom: "moons",
+    title: "The far-out moons",
+    open: "Tap the planet this moon goes around.",
+    doneTitle: "The far-out moons are home!",
+    doneText: "Those moons are so far out that one of them takes years to go round once. Now for the dwarf planets.",
+    next: "Start level 8",
+  },
+  8: {
     order: DWARFS,
     spots: DWARF_SPOTS,
     askFirst: "Which dwarf planet is closest to the Sun?",
@@ -253,19 +409,21 @@ const LEVELS = {
     askHost: "Which dwarf planet does %s go around?",
     /* Shown once the five are in order, because "put the dwarf planets in order"
        is no longer what the level is doing. Not a spoken line -- a title never
-       is -- so it costs nothing to be accurate here. */
-    moonTitle: "Pluto's five moons",
+       is -- so it costs nothing to be accurate here. Eight moons now, not five:
+       Eris and Haumea have named moons too, and this is the only board they
+       are standing on. */
+    moonTitle: "The dwarf planets' moons",
     card: ["pluto", "haumea", "eris"],
     cardFrom: "planets",
     title: "Put the dwarf planets in order",
     open: "Tap the dwarf planet this moon goes around.",
     doneTitle: "You know the dwarf planets!",
-    doneText: "Ceres in the asteroid belt, four more far beyond Neptune, and Pluto's five moons all home.",
+    doneText: "Ceres in the asteroid belt, four more far beyond Neptune, and eight moons all home.",
     next: "Play it all again",
   },
 };
 
-const TOP_LEVEL = 5;
+const TOP_LEVEL = 8;
 
 const SUN_AT = { x: 0.028, y: 0.50, d: 0.27 }; /* fractions of stage width/height */
 /* Flat enough that a whole orbit fits on the stage instead of being cropped to
@@ -423,10 +581,14 @@ const sfx = {
    refuse. See AUDIO-DIRECTION.md and narration/README.md. */
 const voice = { lines: null, el: null, dead: false };
 
-/* `audioReady` is set by tools/build-narration.py only when every clip named in
-   the manifest is actually on disk. Without it the game would 404 its first line
-   on every load before switching itself off -- harmless, but a shipped app should
-   not ask for files it knows are not there.
+/* `audioReady` says the manifest is real. Every line it lists has a clip on
+   disk -- tools/build-narration.py leaves out any line whose file is missing --
+   so the game never asks for a file it knows is not there.
+
+   A line absent from the map is not an error: `speak` returns quietly and the
+   child gets the chime and the words on screen, the same as with sound off.
+   That is how a moon can be added without paying for a render in the same
+   breath; `pending` in the manifest counts the lines still waiting for a voice.
 
    This file is generated, and holds only what the game needs: whether the clips
    are there, and which file says which line. Everything about how the audio was
@@ -536,12 +698,71 @@ const tooClose = (a, b) =>
    a couple of tries, and swapping an offender into place biases which moon opens
    the level. The fallback returns a plain shuffle so a future roster that cannot
    satisfy the constraint still plays. */
-function shuffleApart(list) {
-  for (let tries = 0; tries < 40; tries++) {
-    const out = shuffle(list);
-    if (out.every((m, i) => i === 0 || !tooClose(out[i - 1].key, m.key))) return out;
+/* Two things must not sit next to each other on the deck.
+
+   Confusable names, as before: Titan then Titania is a memory test the game is
+   not setting. And -- added 2026-09-06 -- the same ANSWER twice running. The
+   owner's complaint about the old all-Uranus level 4 was that "if the game is
+   just click on the same planet throughout the level, it is not fun", and that
+   is as true of two in a row as of ten.
+
+   Levels are now mixed by host, but the unseen levels are still about
+   two-thirds Uranus, because 21 of the 33 moons nobody has ever seen go around
+   Uranus. That is a fact about the Solar System and no shuffling repeals it: with
+   seven Uranians among eleven moons, at least two pairs must touch. So the deck
+   is built to hit exactly that floor rather than drawn at random and hoped over
+   -- a plain shuffle averaged four repeats and could still deal five Uranians in
+   a row, which is the thing being fixed. */
+
+/* Deal the host with the most moons still waiting, never the host just dealt.
+   This is the standard way to space repeats, and it reaches the minimum: a host
+   only ever repeats once nothing else is left to separate it. The shuffle at the
+   top and the shuffled tie-break keep the order different every time. */
+function spreadByHost(list) {
+  const byHost = new Map();
+  for (const m of shuffle(list)) {
+    if (!byHost.has(m.of)) byHost.set(m.of, []);
+    byHost.get(m.of).push(m);
   }
-  return shuffle(list);
+  const out = [];
+  let last = null;
+  while (out.length < list.length) {
+    let pick = null;
+    for (const [host, left] of byHost) {
+      if (!left.length || host === last) continue;
+      if (!pick || left.length > byHost.get(pick).length) pick = host;
+    }
+    /* Nothing but the host we just dealt is left. Taking it is the one
+       unavoidable repeat, and refusing here would loop forever. */
+    if (pick === null) {
+      for (const [host, left] of byHost) if (left.length) { pick = host; break; }
+    }
+    out.push(byHost.get(pick).pop());
+    last = pick;
+  }
+  return out;
+}
+
+function deckFaults(out) {
+  let names = 0;
+  let repeats = 0;
+  for (let i = 1; i < out.length; i++) {
+    if (tooClose(out[i - 1].key, out[i].key)) names++;
+    if (out[i - 1].of === out[i].of) repeats++;
+  }
+  return names * 100 + repeats;  /* a confusable pair outweighs any repeat count */
+}
+
+function shuffleApart(list) {
+  let best = null;
+  let bestScore = Infinity;
+  for (let tries = 0; tries < 24; tries++) {
+    const out = spreadByHost(list);
+    const score = deckFaults(out);
+    if (score === 0) return out;
+    if (score < bestScore) { bestScore = score; best = out; }
+  }
+  return best;
 }
 
 /* A piece's drawn box. Saturn is the only one that is not a circle. */
@@ -883,14 +1104,15 @@ function startLevel(level) {
     measure();
     buildTray(shuffle(spec.order));
   } else {
-    /* Levels 2 and 3 inherit the planets. If a child jumps straight to level 3
-       we still need them on the board, so seat them in order first. */
+    /* Every moon level inherits the planets. If a child jumps straight to
+       level 6 we still need them on the board, so seat them in order first. */
     if (state.home.size !== bodies().length) seatAll();
     if (level === 2) {
       state.orbiting.length = 0;
       placedEl.querySelectorAll(".body.moon").forEach((el) => el.remove());
     }
-    /* Level 3 keeps level 2's moons in orbit; only the tray changes. */
+    /* Levels 3 to 7 keep the previous levels' moons in orbit; only the tray
+       changes, so by level 7 the board is carrying every moon met so far. */
     for (const [key, piece] of [...state.pieces]) {
       if (piece.kind === "moon" && !piece.placed) state.pieces.delete(key);
     }
