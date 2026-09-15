@@ -60,7 +60,7 @@
        game has four levels. */
 // v15 also carries (added 2026-09-13, never published under any version): #519, Umbriel is "The darkest of the
 //   five big moons of Uranus." rather than "of all the moons of Uranus", re-rendered as clip 224; clip 044 retired.
-const CACHE_NAME = "solar-order-v15";
+const CACHE_NAME = "solar-order-v16";
 
 /* Both lists are generated -- cache-list.js by tools/build-assets.py from the
    sprites it produced, audio-list.js by tools/build-audio.py from the clips it
