@@ -168,7 +168,6 @@ self.NARRATION = [
   "./assets/audio/177-hippocamp-a-moon-of-neptune-the-newest-moon-of-neptu.m4a",
   "./assets/audio/178-nereid-a-moon-of-neptune-its-path-swings-closer-and.m4a",
   "./assets/audio/179-halimede-a-moon-of-neptune-found-in-2002-going-aroun.m4a",
-  "./assets/audio/180-trinculo-a-moon-of-uranus-the-smallest-of-uranus-s-f.m4a",
   "./assets/audio/181-margaret-a-moon-of-uranus-the-only-far-out-moon-of-u.m4a",
   "./assets/audio/182-ferdinand-a-moon-of-uranus-the-furthest-moon-of-uran.m4a",
   "./assets/audio/184-laomedeia-a-moon-of-neptune-named-after-a-sea-nymph.m4a",
@@ -212,4 +211,5 @@ self.NARRATION = [
   "./assets/audio/222-daphnis-a-moon-of-saturn-it-flies-down-a-gap-in-the.m4a",
   "./assets/audio/223-himalia-a-moon-of-jupiter-the-biggest-of-jupiter-s-f.m4a",
   "./assets/audio/224-umbriel-a-moon-of-uranus-the-darkest-of-the-five-big.m4a",
+  "./assets/audio/225-trinculo-a-moon-of-uranus-the-smallest-of-its-far-ou.m4a",
 ];

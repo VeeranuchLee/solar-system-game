@@ -187,7 +187,7 @@ const MOONS = [
   { key: "halimede",  name: "Halimede",   of: "neptune",  level: 6, d: 13, fact: "Found in 2002, going around Neptune backwards." },
 
   /* Level 7 -- the far-out moons, all on wide, slow, tilted orbits. */
-  { key: "trinculo",  name: "Trinculo",   of: "uranus",   level: 7, d: 13, fact: "The smallest of Uranus's far-out moons." },
+  { key: "trinculo",  name: "Trinculo",   of: "uranus",   level: 7, d: 13, fact: "The smallest of its far-out moons." },
   { key: "margaret",  name: "Margaret",   of: "uranus",   level: 7, d: 13, fact: "The only far-out moon of Uranus that goes the right way round." },
   { key: "ferdinand", name: "Ferdinand",  of: "uranus",   level: 7, d: 13, fact: "The furthest moon of Uranus, and it takes eight years." },
   { key: "sao",       name: "Sao",        of: "neptune",  level: 7, d: 13, fact: "It takes eight years to go around Neptune once." },
