@@ -579,7 +579,18 @@ const sfx = {
    simply empty and the game plays its chime and shows the words -- it never
    falls back to speechSynthesis, which is the thing the audio policy exists to
    refuse. See AUDIO-DIRECTION.md and narration/README.md. */
-const voice = { lines: null, el: null, dead: false };
+const voice = { lines: null, el: null, dead: false, misses: 0 };
+
+/* MISSES, not one strike. `dead` used to be set by the first failed clip, on the
+   reasoning that one missing file meant the set had never been rendered. That is
+   true of a set that was never built and false of a set that lost a single file,
+   and the difference cost a child the whole of level 7 on 2026-09-20: Trinculo's
+   fact pointed at a clip that had since been retired, the 404 set `dead`, and
+   every one of the seven moons after it went silent on a device whose cached
+   manifest still named the old file. A set that genuinely has no audio fails on
+   its first several lines and still stops asking; one retired file now costs one
+   line. */
+const VOICE_GIVE_UP = 5;
 
 /* `audioReady` says the manifest is real. Every line it lists has a clip on
    disk -- tools/build-narration.py leaves out any line whose file is missing --
@@ -606,8 +617,13 @@ function speak(text) {
     if (!voice.el) voice.el = new Audio();
     voice.el.pause();
     voice.el.src = "./assets/audio/" + file;
-    /* One missing file means the set was never rendered; stop asking. */
-    voice.el.onerror = () => { voice.dead = true; };
+    /* A clip that will not load costs that line and nothing more, until enough
+       of them fail in a row that the set itself is clearly not there. */
+    voice.el.onerror = () => {
+      voice.misses += 1;
+      if (voice.misses >= VOICE_GIVE_UP) voice.dead = true;
+    };
+    voice.el.onplaying = () => { voice.misses = 0; };
     const played = voice.el.play();
     if (played && played.catch) played.catch(() => {});
   } catch (e) { voice.dead = true; }

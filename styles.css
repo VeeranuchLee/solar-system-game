@@ -148,7 +148,11 @@ body{
   place-items:center;
   border-radius:50%;
   cursor:pointer;
-  touch-action:none;
+  /* Zoom fix C, 2026-09-26: was `none`. A ring is a drop target, not a drawing
+     surface, and one finger at a time is the whole interaction -- so `pinch-zoom`
+     protects the drag exactly as `none` did and gives the pinch back. A child who
+     zoomed the page in can then pinch out; under `none` they could not. */
+  touch-action:pinch-zoom;
 }
 .slot::before{
   content:"";
@@ -213,7 +217,10 @@ body{
   position:absolute;
   transform:translate(-50%,-50%);
   z-index:4;
-  touch-action:none;
+  /* Zoom fix C, 2026-09-26: was `none`. The tray drags one planet at a time --
+     app.js keeps a single `drag` record -- so nothing here needs a second finger,
+     and `pinch-zoom` still suppresses the page pan that `none` suppressed. */
+  touch-action:pinch-zoom;
   cursor:grab;
 }
 .body img{
@@ -489,14 +496,18 @@ body{
  *                          half, and it was missing from every app but one.
  * touch-action: manipulation  removes double-tap-to-zoom WITHOUT killing scroll.
  *                          Deliberately not `none`: that would stop scrolling.
- *                          Drawing surfaces set their own `touch-action: none`
- *                          and keep it -- a more specific rule still wins.
+ *                          Drag surfaces set their own `touch-action: pinch-zoom`
+ *                          and keep it -- a more specific rule still wins, and
+ *                          pinch-zoom still lets a two-finger pinch through.
  *
- * Pinch needs JavaScript, not CSS: iOS Safari has ignored user-scalable=no since
- * iOS 10, so the viewport meta does nothing. See the gesturestart guard in the
- * HTML.
+ * manipulation is not the whole answer on its own. iPadOS Safari still double-tap
+ * zooms with it in place (owner, 2026-09-25: "kids sometimes double tap, and on
+ * ipad it's zoom in, then they cant zoom out"), which is what ./tap-zoom-guard.js,
+ * loaded first in index.html, is for. It is NOT a gesturestart handler and must
+ * never become one: a document-level pinch blocker is the banned pattern in
+ * INTERACTION-DIRECTION.md, diagnosed in dollhouse-app on 2026-09-07.
  */
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
 
 body {
   -webkit-user-select: none;

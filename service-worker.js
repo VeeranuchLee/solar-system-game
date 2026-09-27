@@ -60,7 +60,13 @@
        game has four levels. */
 // v15 also carries (added 2026-09-13, never published under any version): #519, Umbriel is "The darkest of the
 //   five big moons of Uranus." rather than "of all the moons of Uranus", re-rendered as clip 224; clip 044 retired.
-const CACHE_NAME = "solar-order-v18";
+// v20 2026-09-26: zoom fix C (method C, owner-approved 2026-09-25) -- the shared
+//        ./tap-zoom-guard.js stops the second quick tap's zoom and re-delivers
+//        the tap, while a multi-finger pinch is never touched. It is in APP_FILES
+//        because a shell list is only read when CACHE_NAME changes: an offline
+//        install without it has a page that asks for a guard the cache never got.
+//        v19 was itself never published, so this rides an unpublished bump.
+const CACHE_NAME = "solar-order-v20";
 
 /* Both lists are generated -- cache-list.js by tools/build-assets.py from the
    sprites it produced, audio-list.js by tools/build-audio.py from the clips it
@@ -79,6 +85,7 @@ const APP_FILES = [
   "./",
   "./index.html",
   "./styles.css",
+  "./tap-zoom-guard.js",
   "./app.js",
   "./fonts.css",
   "./fonts/FredokaOne-latin.woff2",
