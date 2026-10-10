@@ -162,7 +162,6 @@ self.NARRATION = [
   "./assets/audio/171-cupid-a-moon-of-uranus-the-faintest-moon-of-uranus-a.m4a",
   "./assets/audio/172-belinda-a-moon-of-uranus-it-goes-around-uranus-in-fi.m4a",
   "./assets/audio/173-perdita-a-moon-of-uranus-it-was-hiding-in-voyager-s.m4a",
-  "./assets/audio/174-francisco-a-moon-of-uranus-the-closest-of-uranus-s-f.m4a",
   "./assets/audio/175-stephano-a-moon-of-uranus-it-travels-the-opposite-wa.m4a",
   "./assets/audio/176-galatea-a-moon-of-neptune-it-keeps-neptune-s-crumbly.m4a",
   "./assets/audio/177-hippocamp-a-moon-of-neptune-the-newest-moon-of-neptu.m4a",
@@ -212,4 +211,5 @@ self.NARRATION = [
   "./assets/audio/223-himalia-a-moon-of-jupiter-the-biggest-of-jupiter-s-f.m4a",
   "./assets/audio/224-umbriel-a-moon-of-uranus-the-darkest-of-the-five-big.m4a",
   "./assets/audio/225-trinculo-a-moon-of-uranus-the-smallest-of-its-far-ou.m4a",
+  "./assets/audio/226-francisco-a-moon-of-uranus-the-closest-of-its-far-ou.m4a",
 ];

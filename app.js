@@ -179,7 +179,7 @@ const MOONS = [
   { key: "cupid",     name: "Cupid",      of: "uranus",   level: 6, d: 13, fact: "The faintest moon of Uranus, and the hardest to see." },
   { key: "belinda",   name: "Belinda",    of: "uranus",   level: 6, d: 14, fact: "It goes around Uranus in fifteen hours." },
   { key: "perdita",   name: "Perdita",    of: "uranus",   level: 6, d: 13, fact: "It was hiding in Voyager's photographs for thirteen years." },
-  { key: "francisco", name: "Francisco",  of: "uranus",   level: 6, d: 13, fact: "The closest of Uranus's far-out moons." },
+  { key: "francisco", name: "Francisco",  of: "uranus",   level: 6, d: 13, fact: "The closest of its far-out moons." },
   { key: "stephano",  name: "Stephano",   of: "uranus",   level: 6, d: 13, fact: "It travels the opposite way to Uranus's big moons." },
   { key: "galatea",   name: "Galatea",    of: "neptune",  level: 6, d: 14, fact: "It keeps Neptune's crumbly ring from spreading out." },
   { key: "hippocamp", name: "Hippocamp",  of: "neptune",  level: 6, d: 13, fact: "The newest moon of Neptune, found in 2013." },
@@ -1414,6 +1414,10 @@ function refuse(piece, targetEl, message) {
 
   if (state.misses < MISSES_BEFORE_HINT) {
     say(message);
+    /* `speak` is also the manifest lookup: the three no-moons answers have
+       exact rendered clips, while generic wrong-answer lines do not. Missing
+       lines therefore stay caption + chime without a browser-voice fallback. */
+    speak(message);
     return;
   }
 
