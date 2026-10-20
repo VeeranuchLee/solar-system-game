@@ -523,6 +523,7 @@ function ac() {
   if (audio.state === "suspended") audio.resume();
   return audio;
 }
+if (typeof AudioWake !== "undefined") AudioWake.attach(() => audio, () => { audio = null; });
 
 function tone(freq, when, dur, gain, type) {
   const ctx = ac();

@@ -66,7 +66,7 @@
 //        because a shell list is only read when CACHE_NAME changes: an offline
 //        install without it has a page that asks for a guard the cache never got.
 //        v19 was itself never published, so this rides an unpublished bump.
-const CACHE_NAME = "solar-order-v22";
+const CACHE_NAME = "solar-order-v23";
 
 /* Both lists are generated -- cache-list.js by tools/build-assets.py from the
    sprites it produced, audio-list.js by tools/build-audio.py from the clips it
@@ -84,6 +84,7 @@ importScripts("./audio-list.js");
 const APP_FILES = [
   "./",
   "./index.html",
+  "./audio-wake.js",
   "./styles.css",
   "./tap-zoom-guard.js",
   "./app.js",
